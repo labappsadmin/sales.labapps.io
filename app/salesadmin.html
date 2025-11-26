@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Sales Module</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="../lib/butterup-2.0.0/butterup.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="../" class="sidebar-logo">LabApps</a>
+        </div>
+        <div id="sidebarMenu" class="sidebar-body"></div>
+    </div>
+    <div class="header-main px-3 px-lg-4">
+        <a id="menuSidebar" href="#" class="menu-link me-3 me-lg-4"><i class="ri-menu-2-fill"></i></a>
+        <div class="form-search me-auto">
+            <input type="text" class="form-control" id="tappsearch" placeholder="Search Admin">
+            <i class="ri-search-line"></i>
+        </div>
+        <div class="dropdown dropdown-profile ms-3 ms-xl-4">
+            <a href="" class="dropdown-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <div class="avatar online"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end mt-10-f">
+                <div class="dropdown-menu-body">
+                    <div class="avatar avatar-xl online mb-3"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+                    <h5 class="mb-1 text-dark fw-semibold spanusername">User</h5>
+                    <p class="fs-sm text-secondary spanuserrole mb-1">Sales User</p>
+                    <nav class="nav">
+                        <a target="_blank" href="https://labapps.gitbook.io"><i class="ri-question-line"></i> Help Center</a>
+                        <a href="../app/userprofile.html"><i class="ri-user-settings-line"></i> Account Settings</a>
+                        <a href="#!" onclick="logoutuser();"><i class="ri-logout-box-r-line"></i> Log Out</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main main-app p-3">
+        <div class="content">
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <ol class="breadcrumb fs-sm mb-1">
+                            <li class="breadcrumb-item"><a href="saleshome.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Admin</li>
+                        </ol>
+                        <h4 class="main-title mb-0">Sales Administration</h4>
+                        <p class="text-muted">Configure territories, workflows, and settings</p>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Territories</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-sm btn-primary" onclick="showAddTerritoryModal()">
+                                    <i class="ri-add-line"></i> New Territory
+                                </button>
+                                <div id="territoriesList" class="mt-3">
+                                    <p class="text-muted">Loading territories...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Lead Scoring Rules</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-sm btn-primary" onclick="showAddScoringRuleModal()">
+                                    <i class="ri-add-line"></i> New Rule
+                                </button>
+                                <div id="scoringRulesList" class="mt-3">
+                                    <p class="text-muted">Loading rules...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../lib/jquery/jquery.min.js?v=2.7.0"></script>
+    <script src="../lib/bootstrap/js/bootstrap.bundle.min.js?v=2.7.0"></script>
+    <script src="../lib/perfect-scrollbar/perfect-scrollbar.min.js?v=2.7.0"></script>
+    <script src="../lib/jqueryui/jquery-ui.min.js?v=2.7.0"></script>
+    <script src="../assets/js/script.js?v=2.7.0"></script>
+    <script src="../assets/js/core.js?v=2.7.0"></script>
+    <script src="../assets/js/auth.js?v=2.7.0"></script>
+    <script src="../lib/butterup-2.0.0/butterup.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="../assets/js/cross-domain-auth.js?v=2.7.0"></script>
+    <script src="../assets/js/salescore.js?v=2.7.0"></script>
+    <script src="../assets/js/salesadmin.js?v=2.7.0"></script>
+    <script type="text/javascript">
+        $(document).ajaxStart(function () { Pace.restart(); });
+        $(document).ready(function () {
+            $('.spanusername').html(displayname);
+            $('.spanuserimg').attr('src', userimage);
+            initAuthErrorHandling();
+            loadDynamicMenu();
+            if (orgid) {
+                loadTerritories();
+                loadScoringRules();
+            }
+        });
+    </script>
+</body>
+</html>
+

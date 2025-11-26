@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Details - Sales Module</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="../lib/butterup-2.0.0/butterup.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="../" class="sidebar-logo">LabApps</a>
+        </div>
+        <div id="sidebarMenu" class="sidebar-body"></div>
+    </div>
+    <div class="header-main px-3 px-lg-4">
+        <a id="menuSidebar" href="#" class="menu-link me-3 me-lg-4"><i class="ri-menu-2-fill"></i></a>
+        <div class="form-search me-auto">
+            <input type="text" class="form-control" id="tappsearch" placeholder="Search Sales">
+            <i class="ri-search-line"></i>
+        </div>
+        <div class="dropdown dropdown-profile ms-3 ms-xl-4">
+            <a href="" class="dropdown-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <div class="avatar online"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end mt-10-f">
+                <div class="dropdown-menu-body">
+                    <div class="avatar avatar-xl online mb-3"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+                    <h5 class="mb-1 text-dark fw-semibold spanusername">User</h5>
+                    <p class="fs-sm text-secondary spanuserrole mb-1">Sales User</p>
+                    <nav class="nav">
+                        <a target="_blank" href="https://labapps.gitbook.io"><i class="ri-question-line"></i> Help Center</a>
+                        <a href="../app/userprofile.html"><i class="ri-user-settings-line"></i> Account Settings</a>
+                        <a href="#!" onclick="logoutuser();"><i class="ri-logout-box-r-line"></i> Log Out</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main main-app p-3">
+        <div class="content">
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <ol class="breadcrumb fs-sm mb-1">
+                            <li class="breadcrumb-item"><a href="saleshome.html">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="salesaccounts.html">Accounts</a></li>
+                            <li class="breadcrumb-item active">Account Details</li>
+                        </ol>
+                        <h4 class="main-title mb-0" id="accountTitle">Account Details</h4>
+                    </div>
+                    <nav>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="saveAccountDetails()">
+                            <i class="ri-save-line"></i> Save
+                        </button>
+                    </nav>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Account Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="formAccount">
+                                    <input type="hidden" id="accountId" />
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Account Name *</label>
+                                            <input type="text" class="form-control" id="accountName" required />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Account Number</label>
+                                            <input type="text" class="form-control" id="accountNumber" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Industry</label>
+                                            <input type="text" class="form-control" id="accountIndustry" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Region</label>
+                                            <input type="text" class="form-control" id="accountRegion" />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Annual Revenue</label>
+                                            <input type="number" class="form-control" id="accountRevenue" step="0.01" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Owner</label>
+                                            <select class="form-select" id="accountOwner" style="width:100%;"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <label class="form-label">Address</label>
+                                            <input type="text" class="form-control mb-2" id="accountAddress1" placeholder="Address Line 1" />
+                                            <input type="text" class="form-control" id="accountAddress2" placeholder="Address Line 2" />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">City</label>
+                                            <input type="text" class="form-control" id="accountCity" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">State</label>
+                                            <input type="text" class="form-control" id="accountState" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Zip</label>
+                                            <input type="text" class="form-control" id="accountZip" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabContacts">Contacts</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabOpportunities">Opportunities</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabActivities">Activities</a></li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="tabContacts">
+                                        <div id="accountContacts">
+                                            <p class="text-muted">Loading contacts...</p>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="tabOpportunities">
+                                        <div id="accountOpportunities">
+                                            <p class="text-muted">Loading opportunities...</p>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="tabActivities">
+                                        <div id="accountActivities">
+                                            <p class="text-muted">Loading activities...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-sm btn-primary w-100 mb-2" onclick="addContact()">
+                                    <i class="ri-user-add-line"></i> Add Contact
+                                </button>
+                                <button class="btn btn-sm btn-success w-100 mb-2" onclick="addOpportunity()">
+                                    <i class="ri-add-line"></i> New Opportunity
+                                </button>
+                                <button class="btn btn-sm btn-info w-100 mb-2" onclick="addActivity()">
+                                    <i class="ri-calendar-line"></i> Log Activity
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../lib/jquery/jquery.min.js?v=2.7.0"></script>
+    <script src="../lib/bootstrap/js/bootstrap.bundle.min.js?v=2.7.0"></script>
+    <script src="../lib/perfect-scrollbar/perfect-scrollbar.min.js?v=2.7.0"></script>
+    <script src="../lib/jqueryui/jquery-ui.min.js?v=2.7.0"></script>
+    <script src="../assets/js/script.js?v=2.7.0"></script>
+    <script src="../assets/js/core.js?v=2.7.0"></script>
+    <script src="../assets/js/auth.js?v=2.7.0"></script>
+    <script src="../lib/butterup-2.0.0/butterup.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="../assets/js/cross-domain-auth.js?v=2.7.0"></script>
+    <script src="../assets/js/salescore.js?v=2.7.0"></script>
+    <script src="../assets/js/salesaccounts.js?v=2.7.0"></script>
+    <script type="text/javascript">
+        var currentAccountId = null;
+        $(document).ajaxStart(function () { Pace.restart(); });
+        $(document).ready(function () {
+            $('.spanusername').html(displayname);
+            $('.spanuserimg').attr('src', userimage);
+            initAuthErrorHandling();
+            loadDynamicMenu();
+            var urlParams = new URLSearchParams(window.location.search);
+            currentAccountId = urlParams.get('id');
+            if (currentAccountId && orgid) {
+                loadAccountDetails(currentAccountId);
+            }
+            loadSalesUsers('#accountOwner', orgid);
+            $('#accountOwner').select2();
+        });
+        function loadAccountDetails(accountId) {
+            salesApiCall('/api/salesaccounts/' + accountId + '?orgid=' + orgid + '&includeChildren=true', 'GET', null, function(account) {
+                $('#accountTitle').text(account.accountname || 'Account Details');
+                $('#accountId').val(account.accountid);
+                $('#accountNumber').val(account.accountnumber);
+                $('#accountName').val(account.accountname);
+                $('#accountIndustry').val(account.industry);
+                $('#accountRegion').val(account.region);
+                $('#accountRevenue').val(account.annualrevenue);
+                $('#accountOwner').val(account.ownerid).trigger('change');
+                $('#accountAddress1').val(account.address1);
+                $('#accountAddress2').val(account.address2);
+                $('#accountCity').val(account.city);
+                $('#accountState').val(account.state);
+                $('#accountZip').val(account.zip);
+                
+                loadAccountContacts(accountId);
+                loadAccountOpportunities(accountId);
+                loadAccountActivities(accountId);
+            });
+        }
+        function loadAccountContacts(accountId) {
+            salesApiCall('/api/salesaccounts/' + accountId + '/contacts?orgid=' + orgid, 'GET', null, function(contacts) {
+                var html = '<table class="table table-sm"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Title</th></tr></thead><tbody>';
+                if (contacts && contacts.length > 0) {
+                    contacts.forEach(function(contact) {
+                        html += '<tr><td>' + (contact.firstname || '') + ' ' + (contact.lastname || '') + '</td>' +
+                               '<td>' + (contact.email || '-') + '</td>' +
+                               '<td>' + (contact.phone || '-') + '</td>' +
+                               '<td>' + (contact.title || '-') + '</td></tr>';
+                    });
+                } else {
+                    html += '<tr><td colspan="4" class="text-center text-muted">No contacts</td></tr>';
+                }
+                html += '</tbody></table>';
+                $('#accountContacts').html(html);
+            });
+        }
+        function loadAccountOpportunities(accountId) {
+            salesApiCall('/api/salesaccounts/' + accountId + '/opportunities?orgid=' + orgid, 'GET', null, function(opportunities) {
+                var html = '<table class="table table-sm"><thead><tr><th>Opportunity</th><th>Stage</th><th>Amount</th><th>Close Date</th></tr></thead><tbody>';
+                if (opportunities && opportunities.length > 0) {
+                    opportunities.forEach(function(opp) {
+                        html += '<tr><td><a href="salesopportunitydetail.html?id=' + opp.opportunityid + '">' + opp.opportunityname + '</a></td>' +
+                               '<td>' + opp.stage + '</td>' +
+                               '<td>$' + formatCurrency(opp.amount) + '</td>' +
+                               '<td>' + formatDate(opp.closedate) + '</td></tr>';
+                    });
+                } else {
+                    html += '<tr><td colspan="4" class="text-center text-muted">No opportunities</td></tr>';
+                }
+                html += '</tbody></table>';
+                $('#accountOpportunities').html(html);
+            });
+        }
+        function loadAccountActivities(accountId) {
+            salesApiCall('/api/salesaccounts/' + accountId + '/activities?orgid=' + orgid, 'GET', null, function(activities) {
+                var html = '<ul class="list-group">';
+                if (activities && activities.length > 0) {
+                    activities.forEach(function(activity) {
+                        html += '<li class="list-group-item"><strong>' + activity.subject + '</strong><br>' +
+                               '<small class="text-muted">' + activity.activitytype + ' - ' + formatDate(activity.duedate) + '</small></li>';
+                    });
+                } else {
+                    html += '<li class="list-group-item text-muted">No activities</li>';
+                }
+                html += '</ul>';
+                $('#accountActivities').html(html);
+            });
+        }
+        function saveAccountDetails() {
+            var accountData = {
+                orgid: orgid,
+                accountname: $('#accountName').val(),
+                industry: $('#accountIndustry').val(),
+                region: $('#accountRegion').val(),
+                annualrevenue: $('#accountRevenue').val() ? parseFloat($('#accountRevenue').val()) : null,
+                ownerid: $('#accountOwner').val() ? parseInt($('#accountOwner').val()) : null,
+                address1: $('#accountAddress1').val(),
+                address2: $('#accountAddress2').val(),
+                city: $('#accountCity').val(),
+                state: $('#accountState').val(),
+                zip: $('#accountZip').val()
+            };
+            var accountId = $('#accountId').val();
+            var url = '/api/salesaccounts';
+            var method = accountId ? 'PUT' : 'POST';
+            if (accountId) url += '/' + accountId;
+            
+            salesApiCall(url, method, accountData, function(response) {
+                showSalesSuccess('Account saved successfully');
+                if (!accountId) {
+                    window.location.reload();
+                }
+            });
+        }
+        function addContact() {
+            window.location.href = 'salescontacts.html?accountid=' + currentAccountId;
+        }
+        function addOpportunity() {
+            window.location.href = 'salesopportunities.html?accountid=' + currentAccountId;
+        }
+        function addActivity() {
+            Swal.fire({
+                title: 'Log Activity',
+                html: '<input type="text" class="form-control mb-2" id="activitySubject" placeholder="Subject *" required />' +
+                      '<select class="form-select mb-2" id="activityType"><option value="Task">Task</option><option value="Call">Call</option><option value="Meeting">Meeting</option></select>' +
+                      '<textarea class="form-control mb-2" id="activityDescription" placeholder="Description"></textarea>' +
+                      '<input type="datetime-local" class="form-control" id="activityDueDate" />',
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+                preConfirm: function() {
+                    return {
+                        orgid: orgid,
+                        activitytype: $('#activityType').val(),
+                        subject: $('#activitySubject').val(),
+                        description: $('#activityDescription').val(),
+                        relatedtoid: currentAccountId,
+                        relatedtotype: 'Account',
+                        duedate: $('#activityDueDate').val() ? new Date($('#activityDueDate').val()).toISOString() : null
+                    };
+                }
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    salesApiCall('/api/salesactivities', 'POST', result.value, function(response) {
+                        showSalesSuccess('Activity logged successfully');
+                        loadAccountActivities(currentAccountId);
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

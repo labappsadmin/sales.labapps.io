@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="htitle">Leads - Sales Module</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="../lib/butterup-2.0.0/butterup.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .selected-row { border-left: 4px solid #007bff !important; background-color: #f8f9fa !important; }
+        .score-badge-high { background-color: #28a745; }
+        .score-badge-medium { background-color: #ffc107; color: #000; }
+        .score-badge-low { background-color: #dc3545; }
+        .action-icons { visibility: hidden; white-space: nowrap; }
+        .action-icons a { margin: 0 3px; font-size: 14px; }
+        .action-icons a.edit-icon { color: #0d6efd; }
+        .action-icons a.convert-icon { color: #198754; }
+        .action-icons a.delete-icon { color: #dc3545; }
+        #leadsTableBody tr:hover .action-icons { visibility: visible; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="../" class="sidebar-logo">LabApps</a>
+        </div>
+        <div id="sidebarMenu" class="sidebar-body"></div>
+    </div>
+    <div class="header-main px-3 px-lg-4">
+        <a id="menuSidebar" href="#" class="menu-link me-3 me-lg-4"><i class="ri-menu-2-fill"></i></a>
+        <div class="form-search me-auto">
+            <input type="text" class="form-control" id="tappsearch" placeholder="Search Leads">
+            <i class="ri-search-line"></i>
+        </div>
+        <div class="dropdown dropdown-profile ms-3 ms-xl-4">
+            <a href="" class="dropdown-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <div class="avatar online"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end mt-10-f">
+                <div class="dropdown-menu-body">
+                    <div class="avatar avatar-xl online mb-3"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+                    <h5 class="mb-1 text-dark fw-semibold spanusername">User</h5>
+                    <p class="fs-sm text-secondary spanuserrole mb-1">Sales User</p>
+                    <nav class="nav">
+                        <a target="_blank" href="https://labapps.gitbook.io"><i class="ri-question-line"></i> Help Center</a>
+                        <a href="../app/userprofile.html"><i class="ri-user-settings-line"></i> Account Settings</a>
+                        <a href="#!" onclick="logoutuser();"><i class="ri-logout-box-r-line"></i> Log Out</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main main-app p-3">
+        <div class="content">
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <ol class="breadcrumb fs-sm mb-1">
+                            <li class="breadcrumb-item"><a href="saleshome.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Leads</li>
+                        </ol>
+                        <h4 class="main-title mb-0">Sales Leads</h4>
+                        <p class="text-muted">Manage and track your leads</p>
+                    </div>
+                    <nav>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="showAddLeadModal()">
+                                <i class="ri-add-line"></i> New Lead
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="showImportModal()">
+                                <i class="ri-upload-line"></i> Import
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="$('#modalFilters').modal('show');">
+                                <i class="ri-filter-line"></i> Filters
+                            </button>
+                        </div>
+                            
+                    </nav>
+                </div>
+                <hr />
+                <!-- Bulk Operations Row -->
+                <div class="row mb-3" id="bulkOperationsRow" style="display:none;">
+                    <div class="col-md-12">
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="text-muted"><i class="ri-checkbox-multiple-line"></i> <span id="selectedCount">0</span> selected</span>
+                            <div class="btn-group" role="group">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" style="border-radius:0px; border-right:none;" type="button" data-bs-toggle="dropdown">
+                                        Status
+                                    </button>
+                                    <ul class="dropdown-menu" id="bulkStatusDropdown">
+                                        <li><a class="dropdown-item" href="#" data-value="New">New</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="Contacted">Contacted</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="Qualified">Qualified</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="Lost">Lost</a></li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" style="border-radius:0px; border-right:none;" type="button" data-bs-toggle="dropdown">
+                                        Assigned To
+                                    </button>
+                                    <ul class="dropdown-menu" id="bulkAssignedDropdown">
+                                        <!-- Populated dynamically -->
+                                    </ul>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" style="border-radius:0px; border-right:none;" type="button" data-bs-toggle="dropdown">
+                                        Source
+                                    </button>
+                                    <ul class="dropdown-menu" id="bulkSourceDropdown">
+                                        <li><a class="dropdown-item" href="#" data-value="Website">Website</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="Referral">Referral</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="Email">Email</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="Phone">Phone</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="Social Media">Social Media</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="Trade Show">Trade Show</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="Other">Other</a></li>
+                                    </ul>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-primary" id="btnApplyBulkUpdate" onclick="applyBulkUpdate()">
+                                    <i class="ri-check-line"></i> Apply
+                                </button>
+                                <button type="button" class="btn btn-sm btn-warning" id="btnMergeLeads" onclick="deduplicateLeads()">
+                                    <i class="ri-merge-cells-horizontal"></i> Merge
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger" id="btnBulkDelete" onclick="bulkDeleteLeads()">
+                                    <i class="ri-delete-bin-line"></i> Delete
+                                </button>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <!-- Status Filter Tabs -->
+                <ul class="nav nav-tabs mb-3" id="leadStatusTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-status="" onclick="loadLeadsByTab('')">All</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-status="New" onclick="loadLeadsByTab('New')">New</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-status="Contacted" onclick="loadLeadsByTab('Contacted')">Contacted</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-status="Qualified" onclick="loadLeadsByTab('Qualified')">Qualified</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-status="Converted" onclick="loadLeadsByTab('Converted')">Converted</a>
+                    </li>
+
+                </ul>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" style="font-size:10pt;">
+                                <thead>
+                                    <tr>
+                                        <th style="width:40px;"><input type="checkbox" id="chkSelectAll" /></th>
+                                        <th>Lead #</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Source</th>
+                                        <th>Status</th>
+                                        <th>Score</th>
+                                        <th>Assigned To</th>
+                                        <th>Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leadsTableBody">
+                                    <tr><td colspan="10" class="text-center">Loading leads...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="paginationContainer" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Lead Modal -->
+    <div class="modal fade" id="modalAddLead">
+        <div class="modal-dialog modal-dialog-slideout">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Lead</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="formAddLead">
+                        <input type="hidden" id="leadId" />
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Lead Name *</label>
+                                <input type="text" class="form-control form-control-sm" id="leadName" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control form-control-sm" id="leadEmail" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control form-control-sm" id="leadPhone" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Source</label>
+                                <select class="form-select form-select-sm" id="leadSource">
+                                    <option value="">Select Source</option>
+                                    <option value="Website">Website</option>
+                                    <option value="Referral">Referral</option>
+                                    <option value="Email">Email</option>
+                                    <option value="Phone">Phone</option>
+                                    <option value="Social Media">Social Media</option>
+                                    <option value="Trade Show">Trade Show</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Status</label>
+                                <select class="form-select form-select-sm" id="leadStatus">
+                                    <option value="New">New</option>
+                                    <option value="Contacted">Contacted</option>
+                                    <option value="Qualified">Qualified</option>
+                                    <option value="Converted">Converted</option>
+                                    <option value="Lost">Lost</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Segment</label>
+                                <input type="text" class="form-control form-control-sm" id="leadSegment" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Assigned To</label>
+                                <select class="form-select form-select-sm" id="leadAssignedTo" style="width:100%;"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Territory</label>
+                                <select class="form-select form-select-sm" id="leadTerritory" style="width:100%;"></select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveLead()">Save Lead</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Convert Lead Modal -->
+    <div class="modal fade" id="modalConvertLead">
+        <div class="modal-dialog modal-dialog-slideout">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Convert Lead</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="convertLeadId" />
+                    <div class="alert alert-info mb-3">
+                        <strong>Lead:</strong> <span id="convertLeadName"></span>
+                    </div>
+                    <p class="text-muted mb-3">Select what to create from this lead:</p>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="chkCreateAccount" checked>
+                        <label class="form-check-label" for="chkCreateAccount">Create Account</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="chkCreateContact" checked>
+                        <label class="form-check-label" for="chkCreateContact">Create Contact</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="chkCreateOpportunity">
+                        <label class="form-check-label" for="chkCreateOpportunity">Create Opportunity</label>
+                    </div>
+                    <div id="oppFields" style="display:none;">
+                        <hr />
+                        <div class="mb-3">
+                            <label class="form-label">Opportunity Name</label>
+                            <input type="text" class="form-control form-control-sm" id="oppName" placeholder="Opportunity Name" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount</label>
+                            <input type="number" class="form-control form-control-sm" id="oppAmount" placeholder="Amount" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Close Date</label>
+                            <input type="date" class="form-control form-control-sm" id="oppCloseDate" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="executeConvertLead()">
+                        <i class="ri-exchange-line"></i> Convert Lead
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Opportunity Modal (for already converted leads) -->
+    <div class="modal fade" id="modalAddOpportunity">
+        <div class="modal-dialog modal-dialog-slideout">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Opportunity</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="addOppLeadId" />
+                    <div class="alert alert-warning mb-3">
+                        <strong>Lead:</strong> <span id="addOppLeadName"></span><br>
+                        <small>This lead has already been converted. You can add a new opportunity to the existing account.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Opportunity Name *</label>
+                        <input type="text" class="form-control form-control-sm" id="newOppName" placeholder="Opportunity Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="form-control form-control-sm" id="newOppAmount" placeholder="Amount" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Close Date</label>
+                        <input type="date" class="form-control form-control-sm" id="newOppCloseDate" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="executeAddOpportunity()">
+                        <i class="ri-add-line"></i> Create Opportunity
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Filters Modal -->
+    <div class="modal fade" id="modalFilters">
+        <div class="modal-dialog modal-dialog-slideout">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filter Leads</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="filterStatus" multiple style="width:100%;"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Source</label>
+                        <select class="form-select" id="filterSource" multiple style="width:100%;"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Assigned To</label>
+                        <select class="form-select" id="filterAssignedTo" multiple style="width:100%;"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Min Score</label>
+                        <input type="number" class="form-control" id="filterMinScore" min="0" max="100" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="clearFilters()">Clear</button>
+                    <button type="button" class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../lib/jquery/jquery.min.js?v=2.7.0"></script>
+    <script src="../lib/bootstrap/js/bootstrap.bundle.min.js?v=2.7.0"></script>
+    <script src="../lib/perfect-scrollbar/perfect-scrollbar.min.js?v=2.7.0"></script>
+    <script src="../lib/jqueryui/jquery-ui.min.js?v=2.7.0"></script>
+    <script src="../lib/autocomplete/jquery.autocomplete.min.js?v=2.7.0"></script>
+    <script src="../assets/js/script.js?v=2.7.0"></script>
+    <script src="../assets/js/core.js?v=2.7.0"></script>
+    <script src="../assets/js/auth.js?v=2.7.0"></script>
+    <script src="../lib/butterup-2.0.0/butterup.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="../assets/js/cross-domain-auth.js?v=2.7.0"></script>
+    <script src="../assets/js/salescore.js?v=2.7.0"></script>
+    <script src="../assets/js/salesleads.js?v=2.7.0"></script>
+    <script type="text/javascript">
+        $(document).ajaxStart(function () { Pace.restart(); });
+        $(document).ready(function () {
+            $('.spanusername').html(displayname);
+            $('.spanuserimg').attr('src', userimage);
+            initAuthErrorHandling();
+            loadDynamicMenu();
+            if (orgid) {
+                loadLeads();
+                initializeLeadPage();
+            }
+        });
+    </script>
+</body>
+</html>
+

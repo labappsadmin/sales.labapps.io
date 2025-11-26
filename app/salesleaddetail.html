@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="htitle">Lead Details - Sales Module</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="../lib/butterup-2.0.0/butterup.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="../" class="sidebar-logo">LabApps</a>
+        </div>
+        <div id="sidebarMenu" class="sidebar-body"></div>
+    </div>
+    <div class="header-main px-3 px-lg-4">
+        <a id="menuSidebar" href="#" class="menu-link me-3 me-lg-4"><i class="ri-menu-2-fill"></i></a>
+        <div class="form-search me-auto">
+            <input type="text" class="form-control" id="tappsearch" placeholder="Search Sales">
+            <i class="ri-search-line"></i>
+        </div>
+        <div class="dropdown dropdown-profile ms-3 ms-xl-4">
+            <a href="" class="dropdown-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <div class="avatar online"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end mt-10-f">
+                <div class="dropdown-menu-body">
+                    <div class="avatar avatar-xl online mb-3"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+                    <h5 class="mb-1 text-dark fw-semibold spanusername">User</h5>
+                    <p class="fs-sm text-secondary spanuserrole mb-1">Sales User</p>
+                    <nav class="nav">
+                        <a target="_blank" href="https://labapps.gitbook.io"><i class="ri-question-line"></i> Help Center</a>
+                        <a href="../app/userprofile.html"><i class="ri-user-settings-line"></i> Account Settings</a>
+                        <a href="#!" onclick="logoutuser();"><i class="ri-logout-box-r-line"></i> Log Out</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main main-app p-3">
+        <div class="content">
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <ol class="breadcrumb fs-sm mb-1">
+                            <li class="breadcrumb-item"><a href="saleshome.html">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="salesleads.html">Leads</a></li>
+                            <li class="breadcrumb-item active">Lead Details</li>
+                        </ol>
+                        <h4 class="main-title mb-0" id="leadTitle">Lead Details</h4>
+                        <p class="text-muted" id="leadSubtitle">Loading...</p>
+                    </div>
+                    <nav>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="editLeadDetails()">
+                            <i class="ri-edit-line"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-success" onclick="convertLeadFromDetail()">
+                            <i class="ri-exchange-line"></i> Convert
+                        </button>
+                        <button type="button" class="btn btn-sm btn-info" onclick="calculateScore()">
+                            <i class="ri-calculator-line"></i> Recalculate Score
+                        </button>
+                    </nav>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Lead Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Lead Number:</strong> <span id="leadNumber">-</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Status:</strong> <span id="leadStatus" class="badge bg-info">-</span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Name:</strong> <span id="leadName">-</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Score:</strong> <span id="leadScore" class="badge bg-success">-</span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Email:</strong> <span id="leadEmail">-</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Phone:</strong> <span id="leadPhone">-</span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Source:</strong> <span id="leadSource">-</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Segment:</strong> <span id="leadSegment">-</span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Assigned To:</strong> <span id="leadAssignedTo">-</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Territory:</strong> <span id="leadTerritory">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Additional Attributes</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="leadAttributes">
+                                    <p class="text-muted">No additional attributes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-sm btn-primary w-100 mb-2" onclick="assignLead()">
+                                    <i class="ri-user-add-line"></i> Assign Lead
+                                </button>
+                                <button class="btn btn-sm btn-warning w-100 mb-2" onclick="mergeWithOther()">
+                                    <i class="ri-merge-cells-horizontal"></i> Merge with Other
+                                </button>
+                                <button class="btn btn-sm btn-danger w-100" onclick="deleteLeadFromDetail()">
+                                    <i class="ri-delete-bin-line"></i> Delete Lead
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../lib/jquery/jquery.min.js?v=2.7.0"></script>
+    <script src="../lib/bootstrap/js/bootstrap.bundle.min.js?v=2.7.0"></script>
+    <script src="../lib/perfect-scrollbar/perfect-scrollbar.min.js?v=2.7.0"></script>
+    <script src="../lib/jqueryui/jquery-ui.min.js?v=2.7.0"></script>
+    <script src="../assets/js/script.js?v=2.7.0"></script>
+    <script src="../assets/js/core.js?v=2.7.0"></script>
+    <script src="../assets/js/auth.js?v=2.7.0"></script>
+    <script src="../lib/butterup-2.0.0/butterup.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="../assets/js/cross-domain-auth.js?v=2.7.0"></script>
+    <script src="../assets/js/salescore.js?v=2.7.0"></script>
+    <script src="../assets/js/salesleads.js?v=2.7.0"></script>
+    <script type="text/javascript">
+        var currentLeadId = null;
+        $(document).ajaxStart(function () { Pace.restart(); });
+        $(document).ready(function () {
+            $('.spanusername').html(displayname);
+            $('.spanuserimg').attr('src', userimage);
+            initAuthErrorHandling();
+            loadDynamicMenu();
+            var urlParams = new URLSearchParams(window.location.search);
+            currentLeadId = urlParams.get('id');
+            if (currentLeadId && orgid) {
+                loadLeadDetails(currentLeadId);
+            }
+        });
+        function loadLeadDetails(leadId) {
+            salesApiCall('/api/salesleads/' + leadId + '?orgid=' + orgid, 'GET', null, function(lead) {
+                $('#leadTitle').text(lead.leadname || 'Lead Details');
+                $('#leadSubtitle').text('Lead #' + lead.leadnumber);
+                $('#leadNumber').text(lead.leadnumber || '-');
+                $('#leadName').text(lead.leadname || '-');
+                $('#leadEmail').text(lead.email || '-');
+                $('#leadPhone').text(lead.phone || '-');
+                $('#leadSource').text(lead.source || '-');
+                $('#leadSegment').text(lead.segment || '-');
+                $('#leadStatus').text(lead.status || 'New');
+                $('#leadScore').text(lead.score || 0);
+                $('#leadAssignedTo').text(lead.assignedtoname || 'Unassigned');
+                $('#leadTerritory').text(lead.territoryname || '-');
+                
+                if (lead.attributes) {
+                    var attrsHtml = '';
+                    for (var key in lead.attributes) {
+                        attrsHtml += '<div class="row mb-2"><div class="col-md-4"><strong>' + key + ':</strong></div><div class="col-md-8">' + lead.attributes[key] + '</div></div>';
+                    }
+                    $('#leadAttributes').html(attrsHtml || '<p class="text-muted">No additional attributes</p>');
+                }
+            });
+        }
+        function editLeadDetails() {
+            if (currentLeadId) {
+                window.location.href = 'salesleads.html?edit=' + currentLeadId;
+            }
+        }
+        function convertLeadFromDetail() {
+            if (currentLeadId) {
+                convertLead(currentLeadId);
+            }
+        }
+        function calculateScore() {
+            if (currentLeadId) {
+                salesApiCall('/api/salesleads/' + currentLeadId + '/score?orgid=' + orgid, 'GET', null, function(response) {
+                    showSalesSuccess('Score recalculated: ' + response.score);
+                    loadLeadDetails(currentLeadId);
+                });
+            }
+        }
+        function assignLead() {
+            if (!currentLeadId) return;
+            Swal.fire({
+                title: 'Assign Lead',
+                html: '<select class="form-select" id="assignUser"><option value="">Select User</option></select>',
+                showCancelButton: true,
+                confirmButtonText: 'Assign',
+                didOpen: function() {
+                    loadSalesUsers('#assignUser', orgid);
+                },
+                preConfirm: function() {
+                    return $('#assignUser').val();
+                }
+            }).then(function(result) {
+                if (result.isConfirmed && result.value) {
+                    salesApiCall('/api/salesleads/' + currentLeadId + '/assign', 'POST', {
+                        leadid: currentLeadId,
+                        assignedto: parseInt(result.value),
+                        assignmenttype: 'Manual'
+                    }, function(response) {
+                        showSalesSuccess('Lead assigned successfully');
+                        loadLeadDetails(currentLeadId);
+                    });
+                }
+            });
+        }
+        function mergeWithOther() {
+            if (!currentLeadId) return;
+            Swal.fire({
+                title: 'Merge Lead',
+                html: '<input type="text" class="form-control" id="mergeLeadId" placeholder="Enter Lead ID to merge with" />',
+                showCancelButton: true,
+                confirmButtonText: 'Merge',
+                preConfirm: function() {
+                    return $('#mergeLeadId').val();
+                }
+            }).then(function(result) {
+                if (result.isConfirmed && result.value) {
+                    salesApiCall('/api/salesleads/merge', 'POST', {
+                        leadids: [currentLeadId, parseInt(result.value)]
+                    }, function(response) {
+                        showSalesSuccess('Leads merged successfully');
+                        window.location.href = 'salesleads.html';
+                    });
+                }
+            });
+        }
+        function deleteLeadFromDetail() {
+            if (currentLeadId) {
+                deleteLead(currentLeadId);
+                setTimeout(function() {
+                    window.location.href = 'salesleads.html';
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
+

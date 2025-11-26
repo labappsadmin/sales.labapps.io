@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="htitle">Sales Dashboard - LabApps</title>
+    <meta name="description" content="Sales Module Dashboard - Pipeline, Forecast, and Activities" />
+    <meta name="keywords" content="sales crm, sales management, pipeline, forecast" />
+    <meta content="labapps" name="author" />
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="../lib/butterup-2.0.0/butterup.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        .pipeline-card {
+            border-left: 4px solid #007bff;
+            margin-bottom: 1rem;
+        }
+        .forecast-card {
+            border-left: 4px solid #28a745;
+        }
+        .activity-card {
+            border-left: 4px solid #ffc107;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .stat-card h3 {
+            color: white;
+            margin: 0;
+        }
+        .stat-card .stat-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="../" class="sidebar-logo">LabApps</a>
+        </div>
+        <div id="sidebarMenu" class="sidebar-body">
+            <!-- Dynamic menu will be loaded here -->
+        </div>
+    </div>
+    <div class="header-main px-3 px-lg-4">
+        <a id="menuSidebar" href="#" class="menu-link me-3 me-lg-4"><i class="ri-menu-2-fill"></i></a>
+        <div class="form-search me-auto">
+            <input type="text" class="form-control" id="tappsearch" placeholder="Search Sales">
+            <i class="ri-search-line"></i>
+        </div>
+        <div class="dropdown dropdown-profile ms-3 ms-xl-4">
+            <a href="" class="dropdown-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <div class="avatar online"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end mt-10-f">
+                <div class="dropdown-menu-body">
+                    <div class="avatar avatar-xl online mb-3"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+                    <h5 class="mb-1 text-dark fw-semibold spanusername">User</h5>
+                    <p class="fs-sm text-secondary spanuserrole mb-1">Sales User</p>
+                    <nav class="nav">
+                        <a target="_blank" href="https://labapps.gitbook.io"><i class="ri-question-line"></i> Help Center</a>
+                        <a href="../app/userprofile.html"><i class="ri-user-settings-line"></i> Account Settings</a>
+                        <a href="#!" onclick="logoutuser();"><i class="ri-logout-box-r-line"></i> Log Out</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main main-app p-3">
+        <div class="content">
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div>
+                        <ol class="breadcrumb fs-sm mb-1">
+                            <li class="breadcrumb-item active" aria-current="page">Sales Dashboard</li>
+                        </ol>
+                        <h4 class="main-title mb-0">Sales Dashboard</h4>
+                        <p class="text-muted">Pipeline, Forecast & Activities Overview</p>
+                    </div>
+                    <nav>
+                        <a href="salesleads.html" class="btn btn-sm btn-primary"><i class="ri-add-line"></i> New Lead</a>
+                        <a href="salesopportunities.html" class="btn btn-sm btn-success"><i class="ri-add-line"></i> New Opportunity</a>
+                    </nav>
+                </div>
+                <hr />
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Pipeline</div>
+                            <h3 id="statTotalPipeline">$0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <div class="stat-label">Weighted Forecast</div>
+                            <h3 id="statWeightedForecast">$0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <div class="stat-label">Active Opportunities</div>
+                            <h3 id="statActiveOpps">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <div class="stat-label">New Leads</div>
+                            <h3 id="statNewLeads">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- Pipeline View -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card pipeline-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="ri-bar-chart-line"></i> Pipeline by Stage</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="pipelineChart" class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Stage</th>
+                                                <th>Count</th>
+                                                <th>Total Amount</th>
+                                                <th>Weighted Forecast</th>
+                                                <th>Avg Probability</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="pipelineTableBody">
+                                            <tr><td colspan="5" class="text-center">Loading pipeline data...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Forecast and Activities -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card forecast-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="ri-line-chart-line"></i> Forecast (Next 90 Days)</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="forecastContent">
+                                    <p class="text-muted">Loading forecast data...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card activity-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="ri-calendar-line"></i> Upcoming Activities</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="activitiesContent">
+                                    <p class="text-muted">Loading activities...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../lib/jquery/jquery.min.js?v=2.7.0"></script>
+    <script src="../lib/bootstrap/js/bootstrap.bundle.min.js?v=2.7.0"></script>
+    <script src="../lib/perfect-scrollbar/perfect-scrollbar.min.js?v=2.7.0"></script>
+    <script src="../lib/jqueryui/jquery-ui.min.js?v=2.7.0"></script>
+    <script src="../assets/js/script.js?v=2.7.0"></script>
+    <script src="../assets/js/core.js?v=2.7.0"></script>
+    <script src="../assets/js/auth.js?v=2.7.0"></script>
+    <script src="../lib/butterup-2.0.0/butterup.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="../assets/js/cross-domain-auth.js?v=2.7.0"></script>
+    <script src="../assets/js/salescore.js?v=2.7.0"></script>
+    <script type="text/javascript">
+        $(document).ajaxStart(function () {
+            Pace.restart();
+        });
+        $(document).ready(function () {
+            $('.spanusername').html(displayname);
+            $('.spanuserimg').attr('src', userimage);
+            initAuthErrorHandling();
+            loadDynamicMenu();
+            loadSalesDashboard();
+        });
+        function loadSalesDashboard() {
+            if (!orgid) return;
+            loadPipelineData();
+            loadForecastData();
+            loadActivitiesData();
+            loadStatistics();
+        }
+        function loadPipelineData() {
+            $.ajax({
+                url: getapiendpoint() + '/api/salesopportunities/pipeline?orgid=' + orgid,
+                method: 'GET',
+                headers: { 'X-API-KEY': apikey },
+                success: function(data) {
+                    var html = '';
+                    var totalPipeline = 0;
+                    var totalForecast = 0;
+                    if (data && data.length > 0) {
+                        data.forEach(function(stage) {
+                            totalPipeline += parseFloat(stage.totalamount || 0);
+                            totalForecast += parseFloat(stage.weightedforecast || 0);
+                            html += '<tr><td><strong>' + stage.stage + '</strong></td><td>' + stage.count + '</td><td>$' + 
+                                   formatCurrency(stage.totalamount) + '</td><td>$' + formatCurrency(stage.weightedforecast) + 
+                                   '</td><td>' + Math.round(stage.avgprobability || 0) + '%</td></tr>';
+                        });
+                    } else {
+                        html = '<tr><td colspan="5" class="text-center text-muted">No pipeline data available</td></tr>';
+                    }
+                    $('#pipelineTableBody').html(html);
+                    $('#statTotalPipeline').text('$' + formatCurrency(totalPipeline));
+                    $('#statWeightedForecast').text('$' + formatCurrency(totalForecast));
+                },
+                error: function(xhr) {
+                    $('#pipelineTableBody').html('<tr><td colspan="5" class="text-center text-danger">Error loading pipeline data</td></tr>');
+                }
+            });
+        }
+        function loadForecastData() {
+            $.ajax({
+                url: getapiendpoint() + '/api/salesreports/forecast?orgid=' + orgid,
+                method: 'GET',
+                headers: { 'X-API-KEY': apikey },
+                success: function(data) {
+                    var html = '<ul class="list-group list-group-flush">';
+                    if (data && data.length > 0) {
+                        data.forEach(function(item) {
+                            html += '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                                   '<span><strong>' + (item.ownername || 'Unassigned') + '</strong> - ' + item.stage + '</span>' +
+                                   '<span class="badge bg-primary rounded-pill">$' + formatCurrency(item.weightedforecast) + '</span></li>';
+                        });
+                    } else {
+                        html += '<li class="list-group-item text-muted">No forecast data available</li>';
+                    }
+                    html += '</ul>';
+                    $('#forecastContent').html(html);
+                },
+                error: function(xhr) {
+                    $('#forecastContent').html('<p class="text-danger">Error loading forecast data</p>');
+                }
+            });
+        }
+        function loadActivitiesData() {
+            $.ajax({
+                url: getapiendpoint() + '/api/salesactivities/calendar?orgid=' + orgid + '&view=week',
+                method: 'GET',
+                headers: { 'X-API-KEY': apikey },
+                success: function(data) {
+                    var html = '<ul class="list-group list-group-flush">';
+                    if (data && data.length > 0) {
+                        data.slice(0, 10).forEach(function(activity) {
+                            var dueDate = activity.duedate ? new Date(activity.duedate).toLocaleDateString() : 'No date';
+                            html += '<li class="list-group-item"><div class="d-flex justify-content-between">' +
+                                   '<div><strong>' + activity.subject + '</strong><br><small class="text-muted">' + 
+                                   activity.activitytype + ' - ' + dueDate + '</small></div>' +
+                                   '<span class="badge bg-' + (activity.status === 'Completed' ? 'success' : 'warning') + '">' + 
+                                   activity.status + '</span></div></li>';
+                        });
+                    } else {
+                        html += '<li class="list-group-item text-muted">No upcoming activities</li>';
+                    }
+                    html += '</ul>';
+                    $('#activitiesContent').html(html);
+                },
+                error: function(xhr) {
+                    $('#activitiesContent').html('<p class="text-danger">Error loading activities</p>');
+                }
+            });
+        }
+        function loadStatistics() {
+            $.ajax({
+                url: getapiendpoint() + '/api/salesreports/dashboard?orgid=' + orgid,
+                method: 'GET',
+                headers: { 'X-API-KEY': apikey },
+                success: function(data) {
+                    if (data) {
+                        var activeOpps = 0;
+                        if (data.pipeline) {
+                            data.pipeline.forEach(function(stage) {
+                                activeOpps += parseInt(stage.count || 0);
+                            });
+                        }
+                        $('#statActiveOpps').text(activeOpps);
+                        if (data.leadStats && data.leadStats.length > 0) {
+                            var newLeads = data.leadStats.find(function(s) { return s.status === 'New'; });
+                            $('#statNewLeads').text(newLeads ? newLeads.count : 0);
+                        }
+                    }
+                }
+            });
+        }
+        function formatCurrency(amount) {
+            if (!amount) return '0.00';
+            return parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+    </script>
+</body>
+</html>
+

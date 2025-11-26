@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opportunity Details - Sales Module</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="../lib/butterup-2.0.0/butterup.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="../" class="sidebar-logo">LabApps</a>
+        </div>
+        <div id="sidebarMenu" class="sidebar-body"></div>
+    </div>
+    <div class="header-main px-3 px-lg-4">
+        <a id="menuSidebar" href="#" class="menu-link me-3 me-lg-4"><i class="ri-menu-2-fill"></i></a>
+        <div class="form-search me-auto">
+            <input type="text" class="form-control" id="tappsearch" placeholder="Search Sales">
+            <i class="ri-search-line"></i>
+        </div>
+        <div class="dropdown dropdown-profile ms-3 ms-xl-4">
+            <a href="" class="dropdown-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <div class="avatar online"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end mt-10-f">
+                <div class="dropdown-menu-body">
+                    <div class="avatar avatar-xl online mb-3"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+                    <h5 class="mb-1 text-dark fw-semibold spanusername">User</h5>
+                    <p class="fs-sm text-secondary spanuserrole mb-1">Sales User</p>
+                    <nav class="nav">
+                        <a target="_blank" href="https://labapps.gitbook.io"><i class="ri-question-line"></i> Help Center</a>
+                        <a href="../app/userprofile.html"><i class="ri-user-settings-line"></i> Account Settings</a>
+                        <a href="#!" onclick="logoutuser();"><i class="ri-logout-box-r-line"></i> Log Out</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main main-app p-3">
+        <div class="content">
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <ol class="breadcrumb fs-sm mb-1">
+                            <li class="breadcrumb-item"><a href="saleshome.html">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="salesopportunities.html">Opportunities</a></li>
+                            <li class="breadcrumb-item active">Opportunity Details</li>
+                        </ol>
+                        <h4 class="main-title mb-0" id="oppTitle">Opportunity Details</h4>
+                    </div>
+                    <nav>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="saveOpportunityDetails()">
+                            <i class="ri-save-line"></i> Save
+                        </button>
+                        <button type="button" class="btn btn-sm btn-success" onclick="createQuote()">
+                            <i class="ri-file-text-line"></i> Create Quote
+                        </button>
+                    </nav>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Opportunity Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="formOpportunity">
+                                    <input type="hidden" id="opportunityId" />
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Opportunity Name *</label>
+                                            <input type="text" class="form-control" id="oppName" required />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Opportunity Number</label>
+                                            <input type="text" class="form-control" id="oppNumber" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Account</label>
+                                            <select class="form-select" id="oppAccount" style="width:100%;"></select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Contact</label>
+                                            <select class="form-select" id="oppContact" style="width:100%;"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Stage</label>
+                                            <select class="form-select" id="oppStage">
+                                                <option value="Prospecting">Prospecting</option>
+                                                <option value="Discovery">Discovery</option>
+                                                <option value="Proposal">Proposal</option>
+                                                <option value="Negotiation">Negotiation</option>
+                                                <option value="Closed Won">Closed Won</option>
+                                                <option value="Closed Lost">Closed Lost</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Amount</label>
+                                            <input type="number" class="form-control" id="oppAmount" step="0.01" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Probability (%)</label>
+                                            <input type="number" class="form-control" id="oppProbability" min="0" max="100" />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Close Date</label>
+                                            <input type="date" class="form-control" id="oppCloseDate" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Owner</label>
+                                            <select class="form-select" id="oppOwner" style="width:100%;"></select>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabHistory">History</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabComments">Comments</a></li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="tabHistory">
+                                        <div id="oppHistory">
+                                            <p class="text-muted">Loading history...</p>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="tabComments">
+                                        <div id="oppComments">
+                                            <textarea class="form-control mb-2" id="newComment" placeholder="Add a comment..."></textarea>
+                                            <button class="btn btn-sm btn-primary" onclick="addComment()">Add Comment</button>
+                                            <div id="commentsList" class="mt-3"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Quick Stats</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <strong>Weighted Amount:</strong><br>
+                                    <span id="weightedAmount" class="h5">$0.00</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Days Until Close:</strong><br>
+                                    <span id="daysUntilClose">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../lib/jquery/jquery.min.js?v=2.7.0"></script>
+    <script src="../lib/bootstrap/js/bootstrap.bundle.min.js?v=2.7.0"></script>
+    <script src="../lib/perfect-scrollbar/perfect-scrollbar.min.js?v=2.7.0"></script>
+    <script src="../lib/jqueryui/jquery-ui.min.js?v=2.7.0"></script>
+    <script src="../assets/js/script.js?v=2.7.0"></script>
+    <script src="../assets/js/core.js?v=2.7.0"></script>
+    <script src="../assets/js/auth.js?v=2.7.0"></script>
+    <script src="../lib/butterup-2.0.0/butterup.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="../assets/js/cross-domain-auth.js?v=2.7.0"></script>
+    <script src="../assets/js/salescore.js?v=2.7.0"></script>
+    <script src="../assets/js/salesopportunities.js?v=2.7.0"></script>
+    <script type="text/javascript">
+        var currentOppId = null;
+        $(document).ajaxStart(function () { Pace.restart(); });
+        $(document).ready(function () {
+            $('.spanusername').html(displayname);
+            $('.spanuserimg').attr('src', userimage);
+            initAuthErrorHandling();
+            loadDynamicMenu();
+            var urlParams = new URLSearchParams(window.location.search);
+            currentOppId = urlParams.get('id');
+            if (currentOppId && orgid) {
+                loadOpportunityDetails(currentOppId);
+            }
+            loadSalesAccounts('#oppAccount', orgid);
+            loadSalesUsers('#oppOwner', orgid);
+            $('#oppAccount, #oppOwner').select2();
+        });
+        function loadOpportunityDetails(oppId) {
+            salesApiCall('/api/salesopportunities/' + oppId + '?orgid=' + orgid, 'GET', null, function(opp) {
+                $('#oppTitle').text(opp.opportunityname || 'Opportunity Details');
+                $('#opportunityId').val(opp.opportunityid);
+                $('#oppNumber').val(opp.opportunitynumber);
+                $('#oppName').val(opp.opportunityname);
+                $('#oppAccount').val(opp.accountid).trigger('change');
+                $('#oppStage').val(opp.stage);
+                $('#oppAmount').val(opp.amount);
+                $('#oppProbability').val(opp.probability);
+                $('#oppCloseDate').val(opp.closedate ? new Date(opp.closedate).toISOString().split('T')[0] : '');
+                $('#oppOwner').val(opp.ownerid).trigger('change');
+                
+                $('#weightedAmount').text('$' + formatCurrency(opp.weightedamount));
+                if (opp.closedate) {
+                    var days = Math.ceil((new Date(opp.closedate) - new Date()) / (1000 * 60 * 60 * 24));
+                    $('#daysUntilClose').text(days + ' days');
+                }
+                
+                loadOpportunityHistory(oppId);
+            });
+        }
+        function loadOpportunityHistory(oppId) {
+            salesApiCall('/api/salesopportunities/' + oppId + '/history?orgid=' + orgid, 'GET', null, function(history) {
+                var html = '<ul class="list-group">';
+                if (history && history.length > 0) {
+                    history.forEach(function(item) {
+                        html += '<li class="list-group-item"><strong>' + item.fieldname + '</strong> changed from ' +
+                               (item.oldvalue || 'N/A') + ' to ' + (item.newvalue || 'N/A') + '<br>' +
+                               '<small class="text-muted">' + formatDateTime(item.changeddate) + ' by ' + (item.changedbyname || 'System') + '</small></li>';
+                    });
+                } else {
+                    html += '<li class="list-group-item text-muted">No history available</li>';
+                }
+                html += '</ul>';
+                $('#oppHistory').html(html);
+            });
+        }
+        function saveOpportunityDetails() {
+            var oppData = {
+                orgid: orgid,
+                opportunityname: $('#oppName').val(),
+                accountid: $('#oppAccount').val() ? parseInt($('#oppAccount').val()) : null,
+                contactid: $('#oppContact').val() ? parseInt($('#oppContact').val()) : null,
+                stage: $('#oppStage').val(),
+                amount: $('#oppAmount').val() ? parseFloat($('#oppAmount').val()) : null,
+                probability: $('#oppProbability').val() ? parseInt($('#oppProbability').val()) : null,
+                closedate: $('#oppCloseDate').val() ? new Date($('#oppCloseDate').val()).toISOString() : null,
+                ownerid: $('#oppOwner').val() ? parseInt($('#oppOwner').val()) : null
+            };
+            var oppId = $('#opportunityId').val();
+            var url = '/api/salesopportunities';
+            var method = oppId ? 'PUT' : 'POST';
+            if (oppId) url += '/' + oppId;
+            
+            salesApiCall(url, method, oppData, function(response) {
+                showSalesSuccess('Opportunity saved successfully');
+                if (!oppId) {
+                    window.location.reload();
+                } else {
+                    loadOpportunityDetails(oppId);
+                }
+            });
+        }
+        function addComment() {
+            var comment = $('#newComment').val();
+            if (!comment) return;
+            
+            salesApiCall('/api/salesopportunities/' + currentOppId + '/comments', 'POST', { comment: comment }, function(response) {
+                showSalesSuccess('Comment added successfully');
+                $('#newComment').val('');
+            });
+        }
+        function createQuote() {
+            if (!currentOppId) return;
+            window.location.href = 'salesquotes.html?opportunityid=' + currentOppId;
+        }
+    </script>
+</body>
+</html>
+

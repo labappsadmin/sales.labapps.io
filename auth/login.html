@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="appleid-signin-client-id" content="[CLIENT_ID]">
+    <meta name="appleid-signin-scope" content="[SCOPES]">
+    <meta name="appleid-signin-redirect-uri" content="[REDIRECT_URI]">
+    <meta name="appleid-signin-state" content="[STATE]">
+    <meta name="theme-color" content="#0134d4">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Labapps - Login</title>
+    <meta name="description" content="labapps.. Helping Lab focus on the core values and processes without breaking the bank." />
+    <meta name="keywords" content="lab crm,html,web,free,lab crm software, free customer service management for labs, laboratory operations management" />
+    <meta content="labapps" name="author" />
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="../lib/butterup-2.0.0/butterup.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+</head>
+<body class="page-sign d-block py-0">
+
+    <div class="row g-0" id="divlogin">
+        <div class="col d-none d-lg-block"><img src="../assets/img/labapps_sand.png" class="auth-img" alt=""></div>
+        <div class="col-md-7 col-lg-5 col-xl-4 col-wrapper">
+            <div class="card card-sign">
+                <div class="card-header">
+                    <div class="mb-5 loginlogo">
+                        <a href="#!" class="header-logo">LabApps</a><br />
+                        <small>&nbsp;Security Portal</small>
+                    </div>
+
+                    <h3 class="card-title logintitle">Sign In&nbsp;</h3>
+                    <p class="card-text loginsubtitle">Welcome back! Please Sign In to Continue.</p>
+                </div><!-- card-header -->
+                <div class="card-body loginareadiv">
+                    <div class="production">
+                        <div class="row gx-2">
+                            <div class="mb-4">
+                                <label class="form-label">Email address</label>
+                                <input type="text" class="form-control" id="tloginname" placeholder="Enter your email address" autocomplete="off">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label d-flex justify-content-between">Password</label>
+                                <input type="password" class="form-control" id="tpassword" placeholder="Enter your password" autocomplete="off">
+                            </div>
+                            <button class="btn btn-primary btn-sign" id="blogin" onclick="loginuser();">Sign In</button>
+
+                        </div>
+
+                    </div>
+
+                    <!--<br />
+                    <!-- row -->
+                    <!--<br />-->
+                    <!--<div class="mb-2"></div>-->
+                    <!-- Set the element id for the JSON response -->
+
+
+                </div><!-- card-body -->
+               
+            </div><!-- card -->
+        </div><!-- col -->
+
+    </div><!-- row -->
+
+    <script src="../lib/jquery/jquery.min.js"></script>
+    <script src="../lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/cross-domain-auth.js?v=123445"></script>
+    <script src="../assets/js/core.js?v=123445"></script>
+    <script src="../assets/js/auth.js?v=123445"></script>
+    <script src="../lib/butterup-2.0.0/butterup.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
+    <script type="text/javascript">
+        $(document).ajaxStart(function () {
+            Pace.restart();
+        });
+        $(document).ready(function () {
+            initiatelogin();
+        });
+
+    </script>
+
+</body>
+</html>

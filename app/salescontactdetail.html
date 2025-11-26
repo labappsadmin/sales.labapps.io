@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Details - Sales Module</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="../lib/butterup-2.0.0/butterup.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="../" class="sidebar-logo">LabApps</a>
+        </div>
+        <div id="sidebarMenu" class="sidebar-body"></div>
+    </div>
+    <div class="header-main px-3 px-lg-4">
+        <a id="menuSidebar" href="#" class="menu-link me-3 me-lg-4"><i class="ri-menu-2-fill"></i></a>
+        <div class="form-search me-auto">
+            <input type="text" class="form-control" id="tappsearch" placeholder="Search Sales">
+            <i class="ri-search-line"></i>
+        </div>
+        <div class="dropdown dropdown-profile ms-3 ms-xl-4">
+            <a href="" class="dropdown-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <div class="avatar online"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end mt-10-f">
+                <div class="dropdown-menu-body">
+                    <div class="avatar avatar-xl online mb-3"><img src="../assets/img/img1.jpg" alt="" class="spanuserimg"></div>
+                    <h5 class="mb-1 text-dark fw-semibold spanusername">User</h5>
+                    <p class="fs-sm text-secondary spanuserrole mb-1">Sales User</p>
+                    <nav class="nav">
+                        <a target="_blank" href="https://labapps.gitbook.io"><i class="ri-question-line"></i> Help Center</a>
+                        <a href="../app/userprofile.html"><i class="ri-user-settings-line"></i> Account Settings</a>
+                        <a href="#!" onclick="logoutuser();"><i class="ri-logout-box-r-line"></i> Log Out</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main main-app p-3">
+        <div class="content">
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <ol class="breadcrumb fs-sm mb-1">
+                            <li class="breadcrumb-item"><a href="saleshome.html">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="salescontacts.html">Contacts</a></li>
+                            <li class="breadcrumb-item active">Contact Details</li>
+                        </ol>
+                        <h4 class="main-title mb-0" id="contactTitle">Contact Details</h4>
+                    </div>
+                    <nav>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="saveContactDetails()">
+                            <i class="ri-save-line"></i> Save
+                        </button>
+                    </nav>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Contact Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="formContact">
+                                    <input type="hidden" id="contactId" />
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">First Name *</label>
+                                            <input type="text" class="form-control" id="contactFirstName" required />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Last Name *</label>
+                                            <input type="text" class="form-control" id="contactLastName" required />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="contactEmail" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Phone</label>
+                                            <input type="text" class="form-control" id="contactPhone" />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Title</label>
+                                            <input type="text" class="form-control" id="contactTitle" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Account</label>
+                                            <select class="form-select" id="contactAccount" style="width:100%;"></select>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Activities</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="contactActivities">
+                                    <p class="text-muted">Loading activities...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../lib/jquery/jquery.min.js?v=2.7.0"></script>
+    <script src="../lib/bootstrap/js/bootstrap.bundle.min.js?v=2.7.0"></script>
+    <script src="../lib/perfect-scrollbar/perfect-scrollbar.min.js?v=2.7.0"></script>
+    <script src="../lib/jqueryui/jquery-ui.min.js?v=2.7.0"></script>
+    <script src="../assets/js/script.js?v=2.7.0"></script>
+    <script src="../assets/js/core.js?v=2.7.0"></script>
+    <script src="../assets/js/auth.js?v=2.7.0"></script>
+    <script src="../lib/butterup-2.0.0/butterup.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js?v=2.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="../assets/js/cross-domain-auth.js?v=2.7.0"></script>
+    <script src="../assets/js/salescore.js?v=2.7.0"></script>
+    <script src="../assets/js/salescontacts.js?v=2.7.0"></script>
+    <script type="text/javascript">
+        var currentContactId = null;
+        $(document).ajaxStart(function () { Pace.restart(); });
+        $(document).ready(function () {
+            $('.spanusername').html(displayname);
+            $('.spanuserimg').attr('src', userimage);
+            initAuthErrorHandling();
+            loadDynamicMenu();
+            var urlParams = new URLSearchParams(window.location.search);
+            currentContactId = urlParams.get('id');
+            if (currentContactId && orgid) {
+                loadContactDetails(currentContactId);
+            }
+            loadSalesAccounts('#contactAccount', orgid);
+            $('#contactAccount').select2();
+        });
+        function loadContactDetails(contactId) {
+            salesApiCall('/api/salescontacts/' + contactId + '?orgid=' + orgid, 'GET', null, function(contact) {
+                $('#contactTitle').text((contact.firstname || '') + ' ' + (contact.lastname || ''));
+                $('#contactId').val(contact.contactid);
+                $('#contactFirstName').val(contact.firstname);
+                $('#contactLastName').val(contact.lastname);
+                $('#contactEmail').val(contact.email);
+                $('#contactPhone').val(contact.phone);
+                $('#contactTitle').val(contact.title);
+                $('#contactAccount').val(contact.accountid).trigger('change');
+                
+                loadContactActivities(contactId);
+            });
+        }
+        function loadContactActivities(contactId) {
+            salesApiCall('/api/salescontacts/' + contactId + '/activities?orgid=' + orgid, 'GET', null, function(activities) {
+                var html = '<ul class="list-group">';
+                if (activities && activities.length > 0) {
+                    activities.forEach(function(activity) {
+                        html += '<li class="list-group-item"><strong>' + activity.subject + '</strong><br>' +
+                               '<small class="text-muted">' + activity.activitytype + ' - ' + formatDate(activity.duedate) + '</small></li>';
+                    });
+                } else {
+                    html += '<li class="list-group-item text-muted">No activities</li>';
+                }
+                html += '</ul>';
+                $('#contactActivities').html(html);
+            });
+        }
+        function saveContactDetails() {
+            var contactData = {
+                orgid: orgid,
+                firstname: $('#contactFirstName').val(),
+                lastname: $('#contactLastName').val(),
+                email: $('#contactEmail').val(),
+                phone: $('#contactPhone').val(),
+                title: $('#contactTitle').val(),
+                accountid: $('#contactAccount').val() ? parseInt($('#contactAccount').val()) : null
+            };
+            var contactId = $('#contactId').val();
+            var url = '/api/salescontacts';
+            var method = contactId ? 'PUT' : 'POST';
+            if (contactId) url += '/' + contactId;
+            
+            salesApiCall(url, method, contactData, function(response) {
+                showSalesSuccess('Contact saved successfully');
+                if (!contactId) {
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
