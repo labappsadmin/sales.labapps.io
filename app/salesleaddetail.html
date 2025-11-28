@@ -13,9 +13,88 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="../assets/css/style.css">
     <link href="../lib/butterup-2.0.0/butterup.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .attr-actions { visibility: hidden; white-space: nowrap; }
+        .attr-actions a { margin: 0 3px; font-size: 14px; }
+        .attr-actions a.edit-icon { color: #0d6efd; }
+        .attr-actions a.delete-icon { color: #dc3545; }
+        .attr-row:hover .attr-actions { visibility: visible; }
+        .note-item:hover .attr-actions { visibility: visible; }
+        .note-item { transition: all 0.2s ease; }
+        .note-item:hover { background: #e3f2fd !important; border-color: #007bff !important; }
+        
+        /* Footer styling */
+        .lead-detail-footer {
+            z-index: 1030;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .main-app {
+            padding-bottom: 60px; /* Space for footer */
+        }
+        #footerStatusMessage {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        #footerStatusMessage.active {
+            color: #0d6efd;
+            font-weight: 500;
+        }
+        
+        /* Timeline styling for activities */
+        ul.timeline {
+            list-style-type: none;
+            position: relative;
+            padding-left: 0;
+        }
+        
+        ul.timeline:before {
+            content: ' ';
+            background: #d4d9df;
+            display: inline-block;
+            position: absolute;
+            left: 15px;
+            width: 2px;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .timeline-item {
+            margin: 15px 0;
+            padding-left: 45px;
+            position: relative;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #d4d9df;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        
+        .timeline-icon i {
+            font-size: 16px;
+        }
+        
+        .timeline-item:hover .timeline-icon {
+            border-color: #0d6efd;
+            transform: scale(1.1);
+            transition: all 0.2s ease;
+        }
+    </style>
 </head>
 <body>
     <div class="sidebar">
@@ -51,81 +130,66 @@
     <div class="main main-app p-3">
         <div class="content">
             <div class="container">
-                <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-start justify-content-between mb-3">
                     <div>
                         <ol class="breadcrumb fs-sm mb-1">
                             <li class="breadcrumb-item"><a href="saleshome.html">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="salesleads.html">Leads</a></li>
                             <li class="breadcrumb-item active">Lead Details</li>
                         </ol>
-                        <h4 class="main-title mb-0" id="leadTitle">Lead Details</h4>
-                        <p class="text-muted" id="leadSubtitle">Loading...</p>
+                        <h4 class="main-title mb-0">
+                            <span id="leadName">Loading...</span>&nbsp;&nbsp;
+                            <span id="leadStatus" class="badge badge-outlined badge-primary">-</span>&nbsp;
+                            <span id="leadScore" class="badge badge-outlined badge-secondary">Score: -</span>
+                        </h4>
+                        <p class="text-muted mb-0">
+                            Lead #<span id="leadNumber">-</span>&nbsp;|&nbsp;
+                            <i class="ri-mail-line"></i> <span id="leadEmail">-</span>&nbsp;|&nbsp;
+                            <i class="ri-phone-line"></i> <span id="leadPhone">-</span>&nbsp;|&nbsp;
+                            <i class="ri-shield-user-line"></i> <span id="leadAssignedTo">-</span>
+                            <a href="#!" onclick="assignLead()" title="Change Assignment"><i class="ri-pencil-fill"></i></a>
+                        </p>
+                        <p class="text-muted mb-0">
+                            <i class="ri-focus-3-line"></i> <span id="leadSource">-</span>&nbsp;|&nbsp;
+                            <i class="ri-folder-line"></i> <span id="leadSegment">-</span>&nbsp;|&nbsp;
+                            <i class="ri-global-fill"></i> <span id="leadTerritory">-</span>
+                        </p>
                     </div>
                     <nav>
-                        <button type="button" class="btn btn-sm btn-primary" onclick="editLeadDetails()">
-                            <i class="ri-edit-line"></i> Edit
-                        </button>
-                        <button type="button" class="btn btn-sm btn-success" onclick="convertLeadFromDetail()">
-                            <i class="ri-exchange-line"></i> Convert
-                        </button>
-                        <button type="button" class="btn btn-sm btn-info" onclick="calculateScore()">
-                            <i class="ri-calculator-line"></i> Recalculate Score
-                        </button>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="editLeadDetails()">
+                                <i class="ri-edit-line"></i> Edit
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="btnConvertLead">
+                                <i class="ri-exchange-line"></i> Convert
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="calculateScore()">
+                                <i class="ri-calculator-line"></i> Recalculate Score
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="mergeWithOther()" title="Merge Lead">
+                                <i class="ri-merge-cells-horizontal"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteLeadFromDetail()" title="Delete Lead">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
                     </nav>
                 </div>
                 <hr />
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Lead Information</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <strong>Lead Number:</strong> <span id="leadNumber">-</span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <strong>Status:</strong> <span id="leadStatus" class="badge bg-info">-</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <strong>Name:</strong> <span id="leadName">-</span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <strong>Score:</strong> <span id="leadScore" class="badge bg-success">-</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <strong>Email:</strong> <span id="leadEmail">-</span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <strong>Phone:</strong> <span id="leadPhone">-</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <strong>Source:</strong> <span id="leadSource">-</span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <strong>Segment:</strong> <span id="leadSegment">-</span>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <strong>Assigned To:</strong> <span id="leadAssignedTo">-</span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <strong>Territory:</strong> <span id="leadTerritory">-</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Additional Attributes</h5>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="alert alert-outline alert-primary"><b>Next Steps:</b> No Next Steps Suggestion.</div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <!-- Properties Section -->
+                        <div class="card card-one mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="card-title mb-0">Properties</span>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="showAddAttributeModal()">
+                                    <i class="ri-add-line"></i> Add
+                                </button>
                             </div>
                             <div class="card-body">
                                 <div id="leadAttributes">
@@ -133,25 +197,265 @@
                                 </div>
                             </div>
                         </div>
+                        
+
                     </div>
-                    <div class="col-md-4">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Quick Actions</h5>
+                    <div class="col-md-6">
+                        <!-- Notes Section (shown only if notes exist) -->
+                        <div class="card card-one mb-3" id="notesCard" style="display:none;">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="card-title mb-0"><i class="ri-sticky-note-line"></i> Notes</span>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="showAddNoteModal()">
+                                    <i class="ri-add-line"></i> Add Note
+                                </button>
                             </div>
                             <div class="card-body">
-                                <button class="btn btn-sm btn-primary w-100 mb-2" onclick="assignLead()">
-                                    <i class="ri-user-add-line"></i> Assign Lead
+                                <div id="leadNotes">
+                                    <p class="text-muted">No notes available</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- Activities Section -->
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="card-title mb-0"><i class="ri-calendar-todo-line"></i> Activities</span>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="showAddActivityModalForLead()">
+                                    <i class="ri-add-line"></i> Add Activity
                                 </button>
-                                <button class="btn btn-sm btn-warning w-100 mb-2" onclick="mergeWithOther()">
-                                    <i class="ri-merge-cells-horizontal"></i> Merge with Other
-                                </button>
-                                <button class="btn btn-sm btn-danger w-100" onclick="deleteLeadFromDetail()">
-                                    <i class="ri-delete-bin-line"></i> Delete Lead
-                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="leadActivities">
+                                    <p class="text-muted">No activities found</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Static Footer with Status Actions -->
+    <div class="lead-detail-footer fixed-bottom bg-white border-top shadow-sm" style="display: none;">
+        <div class="container-fluid px-4 py-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex gap-2 align-items-center">
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnMoveToNextStatus" onclick="moveToNextStatus()" style="display: none;">
+                        <i class="ri-arrow-right-line"></i> <span id="btnMoveToNextStatusText">Move to Next</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="btnMarkAsLost" onclick="markLeadAsLost()" style="display: none;">
+                        <i class="ri-close-circle-line"></i> Mark as Lost
+                    </button>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span id="footerStatusMessage" class="text-muted small me-3"></span>
+                    <div id="footerStatusSpinner" class="spinner-border spinner-border-sm text-primary" role="status" style="display: none;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Lead Modal -->
+    <div class="modal fade" id="modalEditLead">
+        <div class="modal-dialog modal-dialog-slideout">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Lead</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditLead">
+                        <input type="hidden" id="editLeadId" />
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Lead Name *</label>
+                                <input type="text" class="form-control form-control-sm" id="editLeadName" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control form-control-sm" id="editLeadEmail" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control form-control-sm" id="editLeadPhone" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Source</label>
+                                <select class="form-select form-select-sm" id="editLeadSource">
+                                    <option value="">Select Source</option>
+                                    <option value="Website">Website</option>
+                                    <option value="Referral">Referral</option>
+                                    <option value="Email">Email</option>
+                                    <option value="Phone">Phone</option>
+                                    <option value="Social Media">Social Media</option>
+                                    <option value="Trade Show">Trade Show</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Segment</label>
+                                <input type="text" class="form-control form-control-sm" id="editLeadSegment" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Assigned To</label>
+                                <select class="form-select form-select-sm" id="editLeadAssignedTo" style="width:100%;"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Territory</label>
+                                <select class="form-select form-select-sm" id="editLeadTerritory" style="width:100%;"></select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="saveLeadFromDetail()">Save Lead</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Convert Lead Modal -->
+    <div class="modal fade" id="modalConvertLeadDetail">
+        <div class="modal-dialog modal-dialog-slideout">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Convert Lead</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="convertLeadIdDetail" />
+                    <div class="alert alert-info mb-3">
+                        <strong>Lead:</strong> <span id="convertLeadNameDetail"></span>
+                    </div>
+                    <p class="text-muted mb-3">Select what to create from this lead:</p>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="chkCreateAccountDetail" checked>
+                        <label class="form-check-label" for="chkCreateAccountDetail">Create Account</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="chkCreateContactDetail" checked>
+                        <label class="form-check-label" for="chkCreateContactDetail">Create Contact</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="chkCreateOpportunityDetail">
+                        <label class="form-check-label" for="chkCreateOpportunityDetail">Create Opportunity</label>
+                    </div>
+                    <div id="oppFieldsDetail" style="display:none;">
+                        <hr />
+                        <div class="mb-3">
+                            <label class="form-label">Opportunity Name</label>
+                            <input type="text" class="form-control form-control-sm" id="oppNameDetail" placeholder="Opportunity Name" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount</label>
+                            <input type="number" class="form-control form-control-sm" id="oppAmountDetail" placeholder="Amount" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Close Date</label>
+                            <input type="date" class="form-control form-control-sm" id="oppCloseDateDetail" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-success" onclick="executeConvertLeadDetail()">
+                        <i class="ri-exchange-line"></i> Convert Lead
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add/Edit Attribute Modal -->
+    <div class="modal fade" id="modalAttribute">
+        <div class="modal-dialog modal-dialog-slideout">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="attributeModalTitle">Add Attribute</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editAttributeOriginalName" />
+                    <div class="mb-3">
+                        <label class="form-label">Attribute Name *</label>
+                        <select class="form-select form-select-sm" id="attributeName" style="width:100%;"></select>
+                        <small class="text-muted">Pick an Attribute Name. You can type to add New Attribute.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Attribute Value *</label>
+                        <input type="text" class="form-control form-control-sm" id="attributeValue" placeholder="Value" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="saveAttribute()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add/Edit Note Modal -->
+    <div class="modal fade" id="modalNote">
+        <div class="modal-dialog modal-dialog-slideout">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="noteModalTitle">Add Note</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editNoteIndex" />
+                    <div class="mb-3">
+                        <label class="form-label">Note Title</label>
+                        <input type="text" class="form-control form-control-sm" id="noteTitle" placeholder="Note title (optional)" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Note Content *</label>
+                        <textarea class="form-control form-control-sm" id="noteContent" rows="6" placeholder="Note content" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="saveNote()">Save Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Opportunity Modal (for already converted leads) -->
+    <div class="modal fade" id="modalAddOpportunityDetail">
+        <div class="modal-dialog modal-dialog-slideout">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Opportunity</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="addOppLeadIdDetail" />
+                    <div class="alert alert-warning mb-3">
+                        <strong>Lead:</strong> <span id="addOppLeadNameDetail"></span><br>
+                        <small>This lead has already been converted. You can add a new opportunity to the existing account.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Opportunity Name *</label>
+                        <input type="text" class="form-control form-control-sm" id="newOppNameDetail" placeholder="Opportunity Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="form-control form-control-sm" id="newOppAmountDetail" placeholder="Amount" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Close Date</label>
+                        <input type="date" class="form-control form-control-sm" id="newOppCloseDateDetail" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-success" onclick="executeAddOpportunityDetail()">
+                        <i class="ri-add-line"></i> Create Opportunity
+                    </button>
                 </div>
             </div>
         </div>
@@ -164,124 +468,20 @@
     <script src="../assets/js/core.js?v=2.7.0"></script>
     <script src="../assets/js/auth.js?v=2.7.0"></script>
     <script src="../lib/butterup-2.0.0/butterup.js?v=2.7.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js?v=2.7.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="../assets/js/cross-domain-auth.js?v=2.7.0"></script>
     <script src="../assets/js/salescore.js?v=2.7.0"></script>
-    <script src="../assets/js/salesleads.js?v=2.7.0"></script>
+    <script src="../assets/js/salesleaddetail.js?v=2.7.0"></script>
     <script type="text/javascript">
-        var currentLeadId = null;
-        $(document).ajaxStart(function () { Pace.restart(); });
         $(document).ready(function () {
             $('.spanusername').html(displayname);
             $('.spanuserimg').attr('src', userimage);
             initAuthErrorHandling();
             loadDynamicMenu();
-            var urlParams = new URLSearchParams(window.location.search);
-            currentLeadId = urlParams.get('id');
-            if (currentLeadId && orgid) {
-                loadLeadDetails(currentLeadId);
-            }
+            initializeLeadDetailPage();
+            setupAjaxStatusMessages();
         });
-        function loadLeadDetails(leadId) {
-            salesApiCall('/api/salesleads/' + leadId + '?orgid=' + orgid, 'GET', null, function(lead) {
-                $('#leadTitle').text(lead.leadname || 'Lead Details');
-                $('#leadSubtitle').text('Lead #' + lead.leadnumber);
-                $('#leadNumber').text(lead.leadnumber || '-');
-                $('#leadName').text(lead.leadname || '-');
-                $('#leadEmail').text(lead.email || '-');
-                $('#leadPhone').text(lead.phone || '-');
-                $('#leadSource').text(lead.source || '-');
-                $('#leadSegment').text(lead.segment || '-');
-                $('#leadStatus').text(lead.status || 'New');
-                $('#leadScore').text(lead.score || 0);
-                $('#leadAssignedTo').text(lead.assignedtoname || 'Unassigned');
-                $('#leadTerritory').text(lead.territoryname || '-');
-                
-                if (lead.attributes) {
-                    var attrsHtml = '';
-                    for (var key in lead.attributes) {
-                        attrsHtml += '<div class="row mb-2"><div class="col-md-4"><strong>' + key + ':</strong></div><div class="col-md-8">' + lead.attributes[key] + '</div></div>';
-                    }
-                    $('#leadAttributes').html(attrsHtml || '<p class="text-muted">No additional attributes</p>');
-                }
-            });
-        }
-        function editLeadDetails() {
-            if (currentLeadId) {
-                window.location.href = 'salesleads.html?edit=' + currentLeadId;
-            }
-        }
-        function convertLeadFromDetail() {
-            if (currentLeadId) {
-                convertLead(currentLeadId);
-            }
-        }
-        function calculateScore() {
-            if (currentLeadId) {
-                salesApiCall('/api/salesleads/' + currentLeadId + '/score?orgid=' + orgid, 'GET', null, function(response) {
-                    showSalesSuccess('Score recalculated: ' + response.score);
-                    loadLeadDetails(currentLeadId);
-                });
-            }
-        }
-        function assignLead() {
-            if (!currentLeadId) return;
-            Swal.fire({
-                title: 'Assign Lead',
-                html: '<select class="form-select" id="assignUser"><option value="">Select User</option></select>',
-                showCancelButton: true,
-                confirmButtonText: 'Assign',
-                didOpen: function() {
-                    loadSalesUsers('#assignUser', orgid);
-                },
-                preConfirm: function() {
-                    return $('#assignUser').val();
-                }
-            }).then(function(result) {
-                if (result.isConfirmed && result.value) {
-                    salesApiCall('/api/salesleads/' + currentLeadId + '/assign', 'POST', {
-                        leadid: currentLeadId,
-                        assignedto: parseInt(result.value),
-                        assignmenttype: 'Manual'
-                    }, function(response) {
-                        showSalesSuccess('Lead assigned successfully');
-                        loadLeadDetails(currentLeadId);
-                    });
-                }
-            });
-        }
-        function mergeWithOther() {
-            if (!currentLeadId) return;
-            Swal.fire({
-                title: 'Merge Lead',
-                html: '<input type="text" class="form-control" id="mergeLeadId" placeholder="Enter Lead ID to merge with" />',
-                showCancelButton: true,
-                confirmButtonText: 'Merge',
-                preConfirm: function() {
-                    return $('#mergeLeadId').val();
-                }
-            }).then(function(result) {
-                if (result.isConfirmed && result.value) {
-                    salesApiCall('/api/salesleads/merge', 'POST', {
-                        leadids: [currentLeadId, parseInt(result.value)]
-                    }, function(response) {
-                        showSalesSuccess('Leads merged successfully');
-                        window.location.href = 'salesleads.html';
-                    });
-                }
-            });
-        }
-        function deleteLeadFromDetail() {
-            if (currentLeadId) {
-                deleteLead(currentLeadId);
-                setTimeout(function() {
-                    window.location.href = 'salesleads.html';
-                }, 2000);
-            }
-        }
     </script>
 </body>
 </html>
-
