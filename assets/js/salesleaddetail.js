@@ -70,6 +70,9 @@ function loadLeadDetails(leadId) {
         // Update footer status buttons
         updateFooterStatusButtons(lead.status);
         
+        // Disable modifications for Converted/Lost leads
+        disableModificationsForConvertedOrLost(lead.status);
+        
         // Separate notes from attributes and render
         var notes = [];
         var attributes = {};
@@ -472,6 +475,14 @@ function showAddActivityModalForLead() {
         return;
     }
     
+    // Prevent adding activities if lead is converted or lost
+    if (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost') {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Add activities via Account instead.' 
+            : 'Lead is lost. Re-instate to add activities.');
+        return;
+    }
+    
     Swal.fire({
         title: 'Add New Activity',
         html: '<select class="form-select mb-2" id="activityType"><option value="Task">Task</option><option value="Call">Call</option><option value="Meeting">Meeting</option></select>' +
@@ -522,6 +533,16 @@ function showAddActivityModalForLead() {
 function loadNextSteps(lead, notes, attributes) {
     // Prevent concurrent generations
     if (isGeneratingNextSteps) {
+        return;
+    }
+    
+    // Don't generate Next Steps for Converted or Lost leads
+    if (lead.status === 'Converted') {
+        displayNextSteps('Lead is converted. Manage through Account, Contact, and Opportunity records.', false);
+        return;
+    }
+    if (lead.status === 'Lost') {
+        displayNextSteps('Lead is lost. Re-instate to continue working on this lead.', false);
         return;
     }
     
@@ -723,6 +744,93 @@ function triggerNextStepsRegeneration() {
     }
 }
 
+function disableModificationsForConvertedOrLost(status) {
+    var isReadOnly = status === 'Converted' || status === 'Lost';
+    
+    // Disable Edit button
+    if (isReadOnly) {
+        $('button[onclick="editLeadDetails()"]').prop('disabled', true)
+            .addClass('disabled')
+            .attr('title', status === 'Converted' ? 'Lead is converted. Edit via Account instead.' : 'Lead is lost. Re-instate to edit.');
+    } else {
+        $('button[onclick="editLeadDetails()"]').prop('disabled', false)
+            .removeClass('disabled')
+            .attr('title', '');
+    }
+    
+    // Disable Next Steps generation for Converted/Lost
+    if (isReadOnly) {
+        // Don't generate next steps for converted/lost leads
+        if (status === 'Converted') {
+            displayNextSteps('Lead is converted. Manage through Account, Contact, and Opportunity records.', false);
+        } else if (status === 'Lost') {
+            displayNextSteps('Lead is lost. Re-instate to continue working on this lead.', false);
+        }
+    }
+    
+    // Disable Add Attribute button
+    if (isReadOnly) {
+        $('button[onclick="showAddAttributeModal()"]').prop('disabled', true)
+            .addClass('disabled')
+            .attr('title', status === 'Converted' ? 'Lead is converted. Add properties via Account instead.' : 'Lead is lost. Re-instate to add properties.');
+    } else {
+        $('button[onclick="showAddAttributeModal()"]').prop('disabled', false)
+            .removeClass('disabled')
+            .attr('title', '');
+    }
+    
+    // Disable Add Note button
+    if (isReadOnly) {
+        $('button[onclick="showAddNoteModal()"]').prop('disabled', true)
+            .addClass('disabled')
+            .attr('title', status === 'Converted' ? 'Lead is converted. Add notes via Account instead.' : 'Lead is lost. Re-instate to add notes.');
+    } else {
+        $('button[onclick="showAddNoteModal()"]').prop('disabled', false)
+            .removeClass('disabled')
+            .attr('title', '');
+    }
+    
+    // Disable Add Activity button
+    if (isReadOnly) {
+        $('button[onclick="showAddActivityModalForLead()"]').prop('disabled', true)
+            .addClass('disabled')
+            .attr('title', status === 'Converted' ? 'Lead is converted. Add activities via Account instead.' : 'Lead is lost. Re-instate to add activities.');
+    } else {
+        $('button[onclick="showAddActivityModalForLead()"]').prop('disabled', false)
+            .removeClass('disabled')
+            .attr('title', '');
+    }
+    
+    // Disable Recalculate Score button
+    if (isReadOnly) {
+        $('button[onclick="calculateScore()"]').prop('disabled', true)
+            .addClass('disabled')
+            .attr('title', status === 'Converted' ? 'Lead is converted. Score calculation not applicable.' : 'Lead is lost. Re-instate to recalculate score.');
+    } else {
+        $('button[onclick="calculateScore()"]').prop('disabled', false)
+            .removeClass('disabled')
+            .attr('title', '');
+    }
+    
+    // Disable Merge button
+    if (isReadOnly) {
+        $('button[onclick="mergeWithOther()"]').prop('disabled', true)
+            .addClass('disabled')
+            .attr('title', status === 'Converted' ? 'Lead is converted. Merging not applicable.' : 'Lead is lost. Re-instate to merge.');
+    } else {
+        $('button[onclick="mergeWithOther()"]').prop('disabled', false)
+            .removeClass('disabled')
+            .attr('title', '');
+    }
+    
+    // Hide edit/delete icons for attributes and notes
+    if (isReadOnly) {
+        $('.edit-attr-btn, .delete-attr-btn, .edit-note-btn, .delete-note-btn').css('display', 'none');
+    } else {
+        $('.edit-attr-btn, .delete-attr-btn, .edit-note-btn, .delete-note-btn').css('display', '');
+    }
+}
+
 function escapeHtml(text) {
     if (!text) return '';
     return text.toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
@@ -784,6 +892,14 @@ function showAddAttributeModal() {
 }
 
 function editAttribute(name, value) {
+    // Prevent editing if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Edit properties via Account instead.' 
+            : 'Lead is lost. Re-instate to edit properties.');
+        return;
+    }
+    
     $('#editAttributeOriginalName').val(name);
     $('#attributeValue').val(value);
     $('#attributeModalTitle').text('Edit Attribute');
@@ -803,6 +919,14 @@ function editAttribute(name, value) {
 }
 
 function saveAttribute() {
+    // Prevent saving if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Add properties via Account instead.' 
+            : 'Lead is lost. Re-instate to add properties.');
+        return;
+    }
+    
     var name = $('#attributeName').val().trim();
     var value = $('#attributeValue').val().trim();
     
@@ -853,6 +977,14 @@ function saveAttribute() {
 }
 
 function deleteAttribute(name) {
+    // Prevent deleting if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Edit properties via Account instead.' 
+            : 'Lead is lost. Re-instate to edit properties.');
+        return;
+    }
+    
     if (!name) {
         showSalesError('Attribute name is required');
         return;
@@ -899,6 +1031,14 @@ function deleteAttribute(name) {
 }
 
 function showAddNoteModal() {
+    // Prevent adding notes if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Add notes via Account instead.' 
+            : 'Lead is lost. Re-instate to add notes.');
+        return;
+    }
+    
     $('#editNoteIndex').val('');
     $('#noteTitle').val('');
     $('#noteContent').val('');
@@ -907,6 +1047,14 @@ function showAddNoteModal() {
 }
 
 function editNote(noteIndex, note) {
+    // Prevent editing notes if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Edit notes via Account instead.' 
+            : 'Lead is lost. Re-instate to edit notes.');
+        return;
+    }
+    
     $('#editNoteIndex').val(noteIndex);
     $('#noteTitle').val(note.notetitle || '');
     $('#noteContent').val(note.notecontent || '');
@@ -915,6 +1063,14 @@ function editNote(noteIndex, note) {
 }
 
 function saveNote() {
+    // Prevent saving notes if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Add notes via Account instead.' 
+            : 'Lead is lost. Re-instate to add notes.');
+        return;
+    }
+    
     var title = $('#noteTitle').val().trim();
     var content = $('#noteContent').val().trim();
     
@@ -1006,6 +1162,14 @@ function saveNote() {
 }
 
 function deleteNote(noteIndex) {
+    // Prevent deleting notes if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Edit notes via Account instead.' 
+            : 'Lead is lost. Re-instate to edit notes.');
+        return;
+    }
+    
     if (noteIndex === null || noteIndex === undefined || noteIndex === '') {
         showSalesError('Note index is required');
         return;
@@ -1072,6 +1236,14 @@ function deleteNote(noteIndex) {
 
 function editLeadDetails() {
     if (!currentLeadId) return;
+    
+    // Prevent editing if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Edit via Account instead.' 
+            : 'Lead is lost. Re-instate to edit.');
+        return;
+    }
     
     // Initialize select2 dropdowns
     loadSalesUsers('#editLeadAssignedTo', orgid);
@@ -1229,6 +1401,13 @@ function executeAddOpportunityDetail() {
 }
 
 function calculateScore() {
+    // Prevent calculating score if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Score calculation not applicable.' 
+            : 'Lead is lost. Re-instate to recalculate score.');
+        return;
+    }
     if (!currentLeadId) return;
     showFooterStatus('Recalculating score...', true);
     salesApiCall('/api/salesleads/' + currentLeadId + '/score?orgid=' + orgid, 'GET', null, function(response) {
@@ -1272,6 +1451,13 @@ function assignLead() {
 }
 
 function mergeWithOther() {
+    // Prevent merging if lead is converted or lost
+    if (currentLeadData && (currentLeadData.status === 'Converted' || currentLeadData.status === 'Lost')) {
+        showSalesError(currentLeadData.status === 'Converted' 
+            ? 'Lead is converted. Merging not applicable.' 
+            : 'Lead is lost. Re-instate to merge.');
+        return;
+    }
     if (!currentLeadId) return;
     Swal.fire({
         title: 'Merge Lead',
