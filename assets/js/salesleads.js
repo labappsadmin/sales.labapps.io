@@ -8,7 +8,7 @@ var placesCache = {};
 var placesCacheExpiry = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 var isLoading = false;
 var hasMoreData = true;
-var currentStatusFilter = '';
+var currentStatusFilter = 'New';
 
 function initializeLeadPage() {
     loadSalesUsers('#leadAssignedTo', orgid);
@@ -144,10 +144,10 @@ function applyBulkUpdate() {
         Promise.all(updatePromises).then(function() {
             showSalesSuccess('Successfully updated ' + selectedLeadIds.length + ' lead(s)');
             resetBulkOperations();
-            loadLeads();
+            resetAndReload();
         }).catch(function() {
             showSalesError('Some leads could not be updated');
-            loadLeads();
+            resetAndReload();
         });
     });
 }
@@ -172,10 +172,10 @@ function bulkDeleteLeads() {
         Promise.all(deletePromises).then(function() {
             showSalesSuccess('Successfully deleted ' + selectedLeadIds.length + ' lead(s)');
             resetBulkOperations();
-            loadLeads();
+            resetAndReload();
         }).catch(function() {
             showSalesError('Some leads could not be deleted');
-            loadLeads();
+            resetAndReload();
         });
     });
 }
@@ -224,8 +224,7 @@ function updateTabCounts() {
         'New': 0,
         'Contacted': 0,
         'Qualified': 0,
-        'Converted': 0,
-        '': allLeadsData.length
+        'Converted': 0
     };
     
     allLeadsData.forEach(function(lead) {
@@ -237,8 +236,7 @@ function updateTabCounts() {
     $('#leadStatusTabs .nav-link').each(function() {
         var status = $(this).data('status');
         var count = counts[status] || 0;
-        var label = status || 'All';
-        $(this).html(label + ' (' + count + ')');
+        $(this).html(status + ' (' + count + ')');
     });
 }
 
@@ -324,8 +322,8 @@ function renderLeadsTable(leads) {
                    '<td>' + (lead.email || 'N/A') + '</td>' +
                    '<td>' + (lead.phone || 'N/A') + '</td>' +
                    '<td>' + (lead.source || 'N/A') + '</td>' +
-                   '<td><span class="badge bg-info">' + (lead.status || 'New') + '</span></td>' +
-                   '<td><span class="badge ' + scoreBadgeClass + '">' + (lead.score || 0) + '</span></td>' +
+                   '<td><span>' + (lead.status || 'New') + '</span></td>' +
+                   '<td><span>' + (lead.score || 0) + '</span></td>' +
                    '<td>' + (lead.assignedtoname || 'Unassigned') + '</td>' +
                    '<td>' + formatDate(lead.createddate) + 
                    '<span class="action-icons float-end">' +
@@ -401,7 +399,7 @@ function saveLead() {
     salesApiCall(url, method, leadData, function(response) {
         showSalesSuccess(leadId ? 'Lead updated successfully' : 'Lead created successfully');
         $('#modalAddLead').modal('hide');
-        loadLeads();
+        resetAndReload();
     });
 }
 
@@ -409,7 +407,7 @@ function deleteLead(leadId) {
     confirmSalesAction('Are you sure you want to delete this lead?', function() {
         salesApiCall('/api/salesleads/' + leadId + '?orgid=' + orgid, 'DELETE', null, function() {
             showSalesSuccess('Lead deleted successfully');
-            loadLeads();
+            resetAndReload();
         });
     });
 }
@@ -453,7 +451,7 @@ function executeAddOpportunity() {
     salesApiCall('/api/salesleads/' + leadId + '/add-opportunity?orgid=' + orgid, 'POST', data, function(response) {
         $('#modalAddOpportunity').modal('hide');
         showSalesSuccess('Opportunity created successfully');
-        loadLeads();
+        resetAndReload();
     });
 }
 
@@ -515,7 +513,7 @@ function deduplicateLeads() {
         salesApiCall('/api/salesleads/merge', 'POST', { leadids: selectedLeadIds }, function(response) {
             showSalesSuccess('Leads merged successfully');
             selectedLeadIds = [];
-            loadLeads();
+            resetAndReload();
         });
     });
 }
@@ -608,7 +606,7 @@ function showImportModal() {
             
             salesApiCall('/api/salesleads/import?orgid=' + orgid, 'POST', { leads: leads }, function(response) {
                 showSalesSuccess('Imported ' + response.imported + ' leads');
-                loadLeads();
+                resetAndReload();
             });
         }
     });
