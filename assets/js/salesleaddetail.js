@@ -2,9 +2,7 @@
 
 var currentLeadId = null;
 var currentLeadData = null;
-var previousLeadState = null; // Track previous state to detect changes
 var isGeneratingNextSteps = false; // Flag to prevent concurrent generations
-var lastNextStepsRegeneration = 0; // Timestamp of last regeneration to prevent rapid calls
 var currentActivities = []; // Store current activities for AI analysis
 
 function initializeLeadDetailPage() {
@@ -45,6 +43,9 @@ function loadLeadDetails(leadId) {
         
         // Score badge
         $('#leadScore').text('Score: ' + (lead.score || 0));
+        
+        // Update status flow indicator
+        updateStatusFlowIndicator(lead.status);
         
         // Update convert button based on status
         $('#btnConvertLead').off('click'); // Remove existing handlers
@@ -100,24 +101,12 @@ function loadLeadDetails(leadId) {
         
         renderNotes(notes);
         renderAttributes(attributes);
-        
-        // Store current state for change detection BEFORE loading next steps
-        // This prevents loops by having the state ready for comparison
-        previousLeadState = {
-            status: lead.status,
-            attributesHash: JSON.stringify(attributes),
-            notesHash: JSON.stringify(notes),
-            activitiesCount: 0 // Will be updated when activities load
-        };
-        
-        // Load activities first, then load next steps
         loadActivities(leadId);
         
-        // Load and check Next Steps (after state is set)
-        // Use a small delay to ensure activities have started loading
+        // Generate Next Steps on every page load (after activities load)
         setTimeout(function() {
             loadNextSteps(lead, notes, attributes);
-        }, 100);
+        }, 2500); // Wait for activities to load
     }, function(error) {
         showFooterStatus('Failed to load lead details', false);
     });
@@ -266,14 +255,6 @@ function loadActivities(leadId) {
 function renderActivitiesList(activities) {
     // Store activities globally for AI analysis
     currentActivities = activities || [];
-    
-    var activitiesCount = currentActivities.length;
-    
-    // Update activities count in previous state (but don't trigger regeneration automatically)
-    // Regeneration should only happen on user actions, not on data loads
-    if (previousLeadState) {
-        previousLeadState.activitiesCount = activitiesCount;
-    }
     
     if (!activities || activities.length === 0) {
         $('#leadActivities').html('<div class="text-center text-muted py-3"><i class="ri-calendar-todo-line"></i><br/>No activities found for this lead.</div>');
@@ -544,89 +525,35 @@ function loadNextSteps(lead, notes, attributes) {
         return;
     }
     
-    // Check if NextSteps is cached
-    var cachedNextSteps = null;
-    if (lead.attributes && lead.attributes.NextSteps) {
-        cachedNextSteps = lead.attributes.NextSteps;
-    }
-    
-    // If NextSteps attribute doesn't exist, always trigger generation
-    if (!cachedNextSteps) {
-        // Wait a bit for activities to load, then generate
-        setTimeout(function() {
-            if (!isGeneratingNextSteps) {
-                // Double-check it still doesn't exist (might have been added by another process)
-                // Use currentLeadData instead of passed parameters to ensure we have latest data
-                if (!currentLeadData || !currentLeadData.attributes || !currentLeadData.attributes.NextSteps) {
-                    // Use current lead data to ensure we have the latest
-                    if (currentLeadData) {
-                        // Re-extract notes and attributes from currentLeadData
-                        var currentNotes = [];
-                        var currentAttributes = {};
-                        if (currentLeadData.attributes) {
-                            if (currentLeadData.attributes.LeadNotes) {
-                                try {
-                                    var notesValue = currentLeadData.attributes.LeadNotes;
-                                    if (notesValue && notesValue.trim() !== '' && notesValue !== 'null') {
-                                        currentNotes = JSON.parse(notesValue);
-                                        if (!Array.isArray(currentNotes)) {
-                                            currentNotes = [];
-                                        }
-                                    }
-                                } catch (e) {
-                                    console.error('Error parsing LeadNotes:', e);
-                                    currentNotes = [];
-                                }
-                            }
-                            for (var key in currentLeadData.attributes) {
-                                if (key !== 'LeadNotes' && key !== 'NextSteps') {
-                                    currentAttributes[key] = currentLeadData.attributes[key];
-                                }
-                            }
+    // Always generate Next Steps on page load (use current lead data for latest info)
+    if (currentLeadData) {
+        // Re-extract notes and attributes from currentLeadData to ensure we have latest
+        var currentNotes = [];
+        var currentAttributes = {};
+        if (currentLeadData.attributes) {
+            if (currentLeadData.attributes.LeadNotes) {
+                try {
+                    var notesValue = currentLeadData.attributes.LeadNotes;
+                    if (notesValue && notesValue.trim() !== '' && notesValue !== 'null') {
+                        currentNotes = JSON.parse(notesValue);
+                        if (!Array.isArray(currentNotes)) {
+                            currentNotes = [];
                         }
-                        generateNextSteps(currentLeadData, currentNotes, currentAttributes);
-                    } else {
-                        generateNextSteps(lead, notes, attributes);
                     }
-                } else {
-                    displayNextSteps(currentLeadData.attributes.NextSteps);
+                } catch (e) {
+                    console.error('Error parsing LeadNotes:', e);
+                    currentNotes = [];
                 }
             }
-        }, 2500); // Wait 2.5 seconds for activities to load
-        return;
-    }
-    
-    // We have cached value - check if we need to regenerate based on changes
-    var needsRegeneration = false;
-    
-    if (previousLeadState) {
-        // Check if status changed
-        if (previousLeadState.status !== lead.status) {
-            needsRegeneration = true;
-        }
-        // Check if attributes changed (excluding NextSteps from comparison)
-        var currentAttributesHash = JSON.stringify(attributes);
-        if (previousLeadState.attributesHash !== currentAttributesHash) {
-            needsRegeneration = true;
-        }
-        // Check if notes changed
-        var currentNotesHash = JSON.stringify(notes);
-        if (previousLeadState.notesHash !== currentNotesHash) {
-            needsRegeneration = true;
-        }
-        // Don't check activities count here - it's updated separately and shouldn't trigger regeneration
-    }
-    
-    if (needsRegeneration) {
-        // Wait a bit for activities to load, then generate
-        setTimeout(function() {
-            if (!isGeneratingNextSteps) {
-                generateNextSteps(lead, notes, attributes);
+            for (var key in currentLeadData.attributes) {
+                if (key !== 'LeadNotes' && key !== 'NextSteps') {
+                    currentAttributes[key] = currentLeadData.attributes[key];
+                }
             }
-        }, 1500);
+        }
+        generateNextSteps(currentLeadData, currentNotes, currentAttributes);
     } else {
-        // Use cached value
-        displayNextSteps(cachedNextSteps);
+        generateNextSteps(lead, notes, attributes);
     }
 }
 
@@ -676,7 +603,6 @@ function generateNextSteps(lead, notes, attributes) {
     // Call AI API endpoint for next steps (similar to AppAudits/analyze pattern)
     salesApiCall('/api/salesleads/' + currentLeadId + '/nextsteps', 'POST', analysisData, function(response) {
         isGeneratingNextSteps = false;
-        lastNextStepsRegeneration = Date.now();
         
         var nextSteps = response.nextSteps || response.message || response.answer || 'No specific next steps at this time.';
         
@@ -692,14 +618,8 @@ function generateNextSteps(lead, notes, attributes) {
             }
         }
         
-        // Save to NextSteps attribute (this updates currentLeadData immediately, no reload)
+        // Save to NextSteps attribute (for display, but we'll regenerate on next load)
         saveNextStepsToAttribute(nextSteps);
-        
-        // Update previous state to include the new NextSteps in the hash
-        // This prevents regeneration on next load
-        if (previousLeadState) {
-            previousLeadState.attributesHash = JSON.stringify(attributes);
-        }
         
         // Display the result
         displayNextSteps(nextSteps);
@@ -755,37 +675,51 @@ function displayNextSteps(text, isLoading) {
     $('.alert-outline.alert-primary').html(nextStepsHtml);
 }
 
+function updateStatusFlowIndicator(currentStatus) {
+    // Define the flow
+    var flowSteps = ['New', 'Contacted', 'Qualified', 'Converted'];
+    var currentStatusValue = currentStatus || 'New';
+    
+    // Reset all steps
+    $('.status-step').each(function() {
+        var stepStatus = $(this).data('status');
+        $(this).removeClass('active completed lost');
+        
+        if (currentStatusValue === 'Lost') {
+            // If lost, show all steps as inactive
+            return;
+        }
+        
+        var currentIndex = flowSteps.indexOf(currentStatusValue);
+        var stepIndex = flowSteps.indexOf(stepStatus);
+        
+        if (stepIndex === -1) return; // Skip if not in flow
+        
+        if (stepIndex < currentIndex) {
+            // Completed steps
+            $(this).addClass('completed');
+        } else if (stepIndex === currentIndex) {
+            // Current step
+            $(this).addClass('active');
+        }
+        // Future steps remain default (gray)
+    });
+    
+    // If status is Lost, show a special indicator
+    if (currentStatusValue === 'Lost') {
+        $('#statusFlowIndicator').html(
+            '<div class="d-flex align-items-center gap-2">' +
+            '<span class="status-step lost">Lost</span>' +
+            '<small class="text-muted ms-2">(Lead can be re-instated to New)</small>' +
+            '</div>'
+        );
+    }
+}
+
 function triggerNextStepsRegeneration() {
-    // Prevent regeneration if already generating
-    if (isGeneratingNextSteps) {
-        return;
-    }
-    
-    // Debounce: prevent rapid successive calls (wait at least 2 seconds between regenerations)
-    var now = Date.now();
-    if (now - lastNextStepsRegeneration < 2000) {
-        return;
-    }
-    lastNextStepsRegeneration = now;
-    
-    // Reload lead details which will trigger next steps regeneration
-    if (currentLeadId && currentLeadData) {
-        // Clear the cached NextSteps to force regeneration
-        if (currentLeadData.attributes && currentLeadData.attributes.NextSteps) {
-            delete currentLeadData.attributes.NextSteps;
-        }
-        
-        // Mark that we need regeneration by invalidating previous state
-        if (previousLeadState) {
-            previousLeadState.attributesHash = ''; // Force change detection
-        }
-        
-        // Reload to trigger regeneration
-        setTimeout(function() {
-            if (currentLeadId) {
-                loadLeadDetails(currentLeadId);
-            }
-        }, 500);
+    // Simply reload the page to regenerate Next Steps
+    if (currentLeadId) {
+        loadLeadDetails(currentLeadId);
     }
 }
 

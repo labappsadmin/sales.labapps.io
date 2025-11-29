@@ -94,6 +94,34 @@
             transform: scale(1.1);
             transition: all 0.2s ease;
         }
+        
+        /* Status Flow Indicator */
+        .status-step {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6c757d;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        .status-step.active {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
+        }
+        .status-step.completed {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .status-step.lost {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
     </style>
 </head>
 <body>
@@ -108,6 +136,18 @@
         <div class="form-search me-auto">
             <input type="text" class="form-control" id="tappsearch" placeholder="Search Sales">
             <i class="ri-search-line"></i>
+        </div>
+        <!-- Status Flow Indicator -->
+        <div id="statusFlowIndicator">
+            <div class="d-flex align-items-center gap-2 justify-content-end">
+                <span class="status-step" data-status="New">New</span>
+                <i class="ri-arrow-right-line text-muted"></i>
+                <span class="status-step" data-status="Contacted">Contacted</span>
+                <i class="ri-arrow-right-line text-muted"></i>
+                <span class="status-step" data-status="Qualified">Qualified</span>
+                <i class="ri-arrow-right-line text-muted"></i>
+                <span class="status-step" data-status="Converted">Converted</span>
+            </div>
         </div>
         <div class="dropdown dropdown-profile ms-3 ms-xl-4">
             <a href="" class="dropdown-link" data-bs-toggle="dropdown" data-bs-auto-close="outside">
@@ -173,6 +213,7 @@
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                         </div>
+                        
                     </nav>
                 </div>
                 <hr />
